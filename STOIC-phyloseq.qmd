@@ -1,0 +1,2767 @@
+---
+title: "Phyloseq analysis template"
+author: "Curro Campuzano"
+format:
+  html:
+    toc: true
+    toc-location: left
+    embed-resources: true
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+# Setting up the environment
+
+If it's the first time you use this notebook, please follow this steps:
+
+1.  File -\> Open project ... and select "EnvironmentalSciencesAarhus-2022/R/R.Rproj
+2.  You can pull from GitHub for latest modifications (either in terminal using `git pull` or Rstudio Git menu.
+3.  Set up environment using `renv` .
+
+```{r}
+#|label: renv-set
+
+renv::status()
+renv::restore()
+```
+
+```{r}
+get_wants_hue <- function(n, seed = 1, palette = "colorblind_friendly"){
+  if (n <= 0) {
+    return(c())
+  }
+  scheme <- rwantshue::iwanthue(seed = seed, force_init = TRUE)
+  scheme$hex(n,color_space = rwantshue::hcl_presets[[palette]])
+}
+
+library(rwantshue)
+
+get_wants_hue <- function(n, seed = 1, palette = "colorblind_friendly"){
+  if (n <= 0) {
+    return(c())
+  }
+  scheme <- rwantshue::iwanthue(seed = seed, force_init = TRUE)
+  scheme$hex(n, color_space = rwantshue::hcl_presets[[palette]])
+}
+
+# Example usage
+set.seed(123) # Setting a global seed for reproducibility
+colors <- get_wants_hue(5, seed = 123)
+print(colors)
+
+
+```
+
+## OTU Analysis
+
+This interactive notebook is made with Quarto. Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+```{r}
+#|label: dependencies
+#|message: false
+#|warning: false
+#|echo: false
+if (!require("BiocManager")){install.packages("BiocManager")}
+if (!require("phyloseq")){BiocManager::install("phyloseq")}
+if (!require("tidyverse")){install.packages("tidyverse")}
+if (!require("devtools")){install.packages("devtools")}
+if (!require("devtools")){install_github("hoesler/rwantshue")}
+if (!require("pairwiseAdonis")){devtools::install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")}
+if(!require("microbiome")){BiocManager::install("microbiome")}
+if (!requireNamespace("BiocManager", quietly = TRUE, force = TRUE)) install.packages("BiocManager")
+BiocManager::install(c("phyloseq", "microbiome", "ComplexHeatmap"), update = FALSE)
+
+devtools::install_github("david-barnett/microViz")
+
+library(tidyverse)
+library(phyloseq)
+library(microbiome)
+library(vegan)
+library(scales)
+library(magrittr)
+library(microViz)
+library('rwantshue')
+library(patchwork)
+library(agricolae)
+library(FSA)
+library(rcompanion)
+
+
+setwd("~/Documents/AU/DeepPurple/Cryobio/STOIC/data/")
+
+```
+
+## Aesthetics configuration
+
+Please skip this chunk if you want to use the default values. These are Nature's guidelines for generating figures and they look very nice for printing (credits to Palle Villesen). Feel free to edit those by editing that script file.
+
+```{r}
+#| label: configuration_format
+#|message: false
+#|warning: false
+#|echo: false
+source("/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/EnvironmentalSciencesAarhus-2022/R/scripts/configuration_format.R")
+
+theme_Publication <- function(base_size=14, base_family="helvetica") {
+      library(grid)
+      library(ggthemes)
+      (theme_foundation(base_size=base_size, base_family=base_family)
+       + theme(plot.title = element_text(face = "bold",
+                                         size = rel(1.2), hjust = 0.5),
+               text = element_text(),
+               panel.background = element_rect(colour = NA),
+               plot.background = element_rect(colour = NA),
+               panel.border = element_rect(colour = NA),
+               axis.title = element_text(face = "bold",size = rel(1)),
+               axis.title.y = element_text(angle=90,vjust =2),
+               axis.title.x = element_text(vjust = -0.2),
+               axis.text = element_text(), 
+               axis.line = element_line(colour="black"),
+               axis.ticks = element_line(),
+               panel.grid.major = element_line(colour="#f0f0f0"),
+               panel.grid.minor = element_blank(),
+               legend.key = element_rect(colour = NA),
+               legend.position = "bottom",
+               legend.direction = "horizontal",
+               legend.key.size= unit(0.2, "cm"),
+               legend.margin = unit(0, "cm"),
+               legend.title = element_text(face="italic"),
+               plot.margin=unit(c(10,5,5,5),"mm"),
+               strip.background=element_rect(colour="#f0f0f0",fill="#f0f0f0"),
+               strip.text = element_text(face="bold")
+          ))
+      
+}
+
+scale_fill_Publication <- function(...){
+      library(scales)
+      discrete_scale("fill","Publication",manual_pal(values = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
+
+}
+
+scale_colour_Publication <- function(...){
+      library(scales)
+      discrete_scale("colour","Publication",manual_pal(values = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
+
+}
+
+
+
+
+
+```
+# Preparing data
+
+## Reading OTU and TAXA CSV
+
+We are assuming that you have csv files (separated with ","):
+There are many different files that are needed in this TotalRNA phyloseq counts analysis:
+
+ICE and CC phyloseq objects:
+rRNA count and taxa table
+mRNA count and taxa table
+site/sequence info/mRNA counts with site info metadata
+
+2 sample types * 2 count tables * 1 metadata options = 4 phyloseq objects
+(ice OR cryoconite)       (mRNA or rRNA)    (site information)
+ALLSTOIC is ice and cc MERGED and KATIE25 removed. 
+KATIE25 should be looked at against STOIC25 in *"ALLSTOIC_mRNA_siteMD and ALLSTOIC_rRNA_siteMD"*
+
+Phyloseq object file name order will go:
+PHY_SAMPLE _ which RNA _ metadata
+
+Examples:
+PHY_cc_mRNA_siteMD
+PHY_ice_rRNA_siteMD
+ALLSTOIC_mRNA_siteMD
+
+phyloseq is assumed for ALLSTOIC, if it is a psmelt into dataframe then it will end with "df"
+
+
+##ICE FILES
+```{r}
+#|label: read-files
+
+##rRNA##
+ICE_rRNA_COUNTS_CSV <- "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/crest4_results/STOICice_COUNTS.csv"
+ICE_rRNA_TAXA_CSV <- "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/crest4_results/STOICice_TAXAs.csv"
+
+ice_rRNA_counts <- read_csv(ICE_rRNA_COUNTS_CSV) |>
+  phyloseq::otu_table(taxa_are_rows = TRUE)
+
+ice_rRNA_taxa <- readr::read_delim(ICE_rRNA_TAXA_CSV, delim = ";") |>
+  as.matrix() |>
+  phyloseq::tax_table() 
+
+
+######
+#####METADATA#####
+#####
+
+## Reading ICEmetadata table
+#ice_MD_CSV <- read_csv("~/Documents/AU/DeepPurple/Cryobio/STOIC/data/STOICice_BIG_METADATA.csv")
+
+ice_MD_CSV <- read_csv("~/Documents/AU/DeepPurple/Cryobio/STOIC/data/STOICice_METADATA.csv",
+                       col_types = cols(DAYOFYEAR = col_character()))
+
+#MD
+icesiteMD <- ice_MD_CSV %>%
+  tibble::column_to_rownames(var = "SEQUENCEFILE")|>
+  phyloseq::sample_data()
+
+```
+##CRYOCONITE FILES
+```{r}
+
+##rRNA##
+CC_rRNA_COUNTS_CSV <- "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/crest4_results/STOICcc_COUNTS.csv"
+CC_rRNA_TAXA_CSV <- "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/crest4_results/STOICcc_TAXA.csv"
+
+cc_rRNA_counts <- read_csv(CC_rRNA_COUNTS_CSV) |>
+  phyloseq::otu_table(taxa_are_rows = TRUE)
+
+cc_rRNA_taxa <- readr::read_delim(CC_rRNA_TAXA_CSV, delim = ";") |>
+  as.matrix() |>
+  phyloseq::tax_table() 
+
+######
+#####METADATA#####
+#####
+
+## Reading CCmetadata table
+cc_MD_CSV <- read_csv("~/Documents/AU/DeepPurple/Cryobio/STOIC/data/STOICcc_METADATA.csv",
+                   col_types = cols(DAYOFYEAR = col_character()))
+
+#siteMD
+ccsiteMD <- cc_MD_CSV %>%
+  tibble::column_to_rownames(var = "SEQUENCEFILE")|>
+  phyloseq::sample_data()
+
+```
+##The peasant way
+```{r}
+
+#Phyloeq objects
+PHY_ice_rRNA_siteMD <- phyloseq(ice_rRNA_counts, ice_rRNA_taxa, icesiteMD)
+
+PHY_cc_rRNA_siteMD <- phyloseq(cc_rRNA_counts, cc_rRNA_taxa, ccsiteMD)
+
+
+```
+
+
+```{r}
+##ALLSTOIC
+
+ALLSTOIC_rRNA_siteMD <- merge_phyloseq(PHY_ice_rRNA_siteMD, PHY_cc_rRNA_siteMD)
+
+
+```
+
+# Rename objects
+
+```{r}
+
+#|label: ALLSTOIC obj
+
+remove_site6 <- function(...) {
+    object_names <- as.character(substitute(list(...)))[-1]
+    
+    for (object_name in object_names) {
+        # Retrieve the object by name
+        phyloseq_object <- get(object_name)
+        
+        # Apply subset_samples to remove SITE 6
+        modified_object <- subset_samples(phyloseq_object, SITE != "6")
+        
+        # Create a new object name
+        new_name <- paste(object_name, "no_site6", sep = "_")
+        
+        # Assign the modified object to the global environment with the new name
+        assign(new_name, modified_object, envir = .GlobalEnv)
+    }
+}
+
+# Call the function with your phyloseq objects
+remove_site6(
+    ALLSTOIC_rRNA_siteMD,
+    PHY_cc_rRNA_siteMD,
+    PHY_ice_rRNA_siteMD
+)
+
+```
+
+
+##FIX THE TAXA for the phyloseq objects
+```{r}
+
+library(phyloseq)
+
+## For the ALLSTOIC_rRNA phyloseq objects you need taxrank = "genus" and then you have to change that line
+#you need to reload the function and run the function with the correct ALLSTOIC
+
+process_phyloseq_objects <- function(...) {
+    object_names <- as.character(substitute(list(...)))[-1]
+    
+    for (object_name in object_names) {
+        # Retrieve the object by name
+        phy_obj <- get(object_name)
+
+        # Renaming and modifying the tax_table
+        tax_table(phy_obj) <- apply(tax_table(phy_obj), 2, function(x) gsub("[a-z]__", "", x))
+        #tax_table(phy_obj) <- apply(tax_table(phy_obj), 2, function(x) gsub("incertae sedis", "", x))
+        #tax_table(phy_obj) <- apply(tax_table(phy_obj), 2, function(x) gsub("X", "", x))
+
+        # Taxonomic condensation
+        phy_obj_taxglom <- tax_glom(phy_obj, taxrank = "phylum")
+
+        # Melt the data into a DataFrame
+        tempdf <- psmelt(phy_obj_taxglom)
+
+        # Create new names for the modified phyloseq object and the DataFrame
+        new_phy_obj_name <- paste(object_name, "TRUE", sep = "_")
+        new_df_name <- paste(object_name, "df", sep = "_")
+
+        # Assign the modified objects to the global environment with the new names
+        assign(new_phy_obj_name, phy_obj_taxglom, envir = .GlobalEnv)
+        assign(new_df_name, tempdf, envir = .GlobalEnv)
+    }
+}
+
+
+# ALLSTOIC_rRNA change taxrank = "genus"
+process_phyloseq_objects( ALLSTOIC_rRNA_siteMD_no_site6, 
+                          PHY_cc_rRNA_siteMD_no_site6,
+                          PHY_ice_rRNA_siteMD_no_site6)
+
+```
+
+```{r}
+#Fix these abominal names
+
+rename_phyloseq_objects <- function(object_names) {
+    for (original_name in object_names) {
+        # Remove '_no_site6_TRUE' from the name and prepend 'AC_'
+        new_name <- gsub("_no_site6_TRUE", "", original_name)
+        new_name <- paste("AC", new_name, sep = "_")
+
+        # Retrieve the original object
+        phy_obj <- get(original_name)
+
+        # Assign the object to the new name in the global environment
+        assign(new_name, phy_obj, envir = .GlobalEnv)
+    }
+}
+
+# List of original phyloseq object names
+original_names <- c(
+  "PHY_cc_rRNA_siteMD_no_site6_TRUE",
+  "PHY_ice_rRNA_siteMD_no_site6_TRUE",
+  "ALLSTOIC_rRNA_siteMD_no_site6_TRUE"
+)
+
+# Call the function
+rename_phyloseq_objects(original_names)
+
+
+```
+#### Phylo seq object evolutions
+#1: components of the first object : cc_rRNA_counts, cc_rRNA_taxa, ccsiteMD
+#                                  ice_rRNA_counts, ice_rRNA_taxa, icesiteMD
+#2 Step 1 makes the TYPE specific phyloseq object, like: PHY_ice_mRNA_siteMD
+#3 Combine the PHY_ice_X_Y with the same PHY_cc_X_Y (matching RNA and metadata) for ALLSTOIC_XRNA_Y
+#4 Run ie, ALLSTOIC_mRNA_seqMD through function to remove Site6 (KATIE25/0801ICE5 day 213) for ALLSTOIC_mRNA_seqMD_no_site6
+#5 Run ie, ALLSTOIC_mRNA_seqMD_no_site6 through function to fix the taxonomy for ALLSTOIC_mRNA_seqMD_no_site6_TRUE
+# and get an equivalent ALLSTOIC_X_Y_no_site6_df as a dataframe
+#6 Rename the terrible names to AC_ALLSTOIC_X_Y
+
+###RAREFY THE PHYLOSEQ OBJECTS####
+```{r}
+
+#Test for rarefraction curve. With this study, we cant toss any samples, so we just rarefy to the smallest libary
+
+
+AC_ALLSTOIC_rRNA_siteMD
+OBJ <- AC_PHY_cc_rRNA_siteMD
+OBJ <-AC_PHY_ice_rRNA_siteMD
+
+
+min_sample <- min(sample_sums(OBJ))
+#CC is 4,796,498
+#ICE is 3,931,675
+
+hist(sample_sums(OBJ), main="Histogram: Read Counts", xlab="Total Reads", 
+     border="blue", col="green", las=1, breaks=100)
+
+
+readcount = data.table(as(sample_data(OBJ), "data.frame"),
+                 TotalReads = sample_sums(OBJ), 
+                 keep.rownames = TRUE)
+setnames(readcount, "rn", "SampleID")
+ggplot(readcount, aes(TotalReads)) + geom_histogram() + ggtitle("Sequencing Depth")
+head(readcount[order(readcount$TotalReads), c("SampleID", "TotalReads")])
+
+#Rarefraction curve
+otu.rare = otu_table(OBJ)
+otu.rare = as.data.frame(t(otu.rare))
+sample_names = rownames(otu.rare)
+otu.rarecurve = rarecurve(otu.rare, step = 10000, label = F)
+
+
+```
+
+###Functionize the major taxa pruning and the rarefying and ploting
+```{r}
+# Function to filter for major taxa and rarefy the data
+filter_and_rarefy <- function(pseq, output_file) {
+  # Calculate the total read count for each sample
+  total_counts <- rowSums(t(otu_table(pseq)))
+
+  # Calculate the percentage of each phylum relative to the total read count
+  phylum_percentages <- (otu_table(pseq) / total_counts) * 100
+
+  # Identify the major phyla that represent more than 1% of the total read count
+  major_phyla <- rownames(phylum_percentages)[apply(phylum_percentages, 1, function(x) any(x > 1))]
+
+  # Filter for the major taxa
+  filtered_physeq <- prune_taxa(major_phyla, pseq)
+
+  # Rarefy the filtered data
+  rarefied_physeq <- rarefy_even_depth(
+    filtered_physeq, 
+    sample.size = min(sample_sums(filtered_physeq)),
+    rngseed = FALSE, replace = TRUE, trimOTUs = TRUE, verbose = TRUE
+  )
+
+  # Save the rarefied object to a file
+  saveRDS(rarefied_physeq, file = output_file)
+  
+  return(rarefied_physeq)
+}
+
+# Apply the function to both datasets and save the results
+ICE_rarefy <- filter_and_rarefy(AC_PHY_ice_rRNA_siteMD, "rarefied_ice.rds")
+CC_rarefy <- filter_and_rarefy(AC_PHY_cc_rRNA_siteMD, "rarefied_cc.rds")
+
+###To make the stack barchart:
+
+# Load the pre-rarefied objects
+ICE_rarefy <- readRDS("rarefied_ice.rds")
+CC_rarefy <- readRDS("rarefied_cc.rds")
+
+# Define a function to generate the plot from the rarefied data
+generate_plot <- function(pseq, plot_title) {
+  # Melt the rarefied data
+  melted_physeq <- psmelt(pseq)
+
+  # Generate the plot
+  p <- ggplot(melted_physeq, aes(x = DAYOFYEAR, y = Abundance, fill = reorder(phylum, Abundance))) + 
+    geom_bar(stat = 'identity', position = "fill") + 
+    facet_grid(SITE ~ TYPE) +
+    scale_fill_manual(values = taxa_colors) + 
+    labs(title = plot_title, x = "Day", y = "Relative Abundance", fill = "Phyla") +
+    scale_x_discrete(breaks = c(209, 213, 217, 219, 222, 225, 230)) +
+    scale_y_continuous(labels = scales::comma) +
+    theme_classic() +
+    theme(axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust = 1),
+          legend.title = element_text(size = 10),
+          legend.text = element_text(size = 8))
+
+  return(p)
+}
+
+# Generate plots from the pre-rarefied data
+plot_ice <- generate_plot(ICE_rarefy, "Ice Library Rarefied")
+plot_cc <- generate_plot(CC_rarefy, "Cryoconite Library Rarefied")
+
+# To view the plots, you can use:
+print(plot_ice)
+print(plot_cc)
+
+CC_rare_df <- psmelt(CC_rarefy)
+ICE_rare_df <- psmelt(ICE_rarefy)
+
+```
+
+
+```{r}
+
+ALLSTOIC_rare <- merge_phyloseq(CC_rarefy, ICE_rarefy)
+ALLSTOIC_rare_df <- psmelt(ALLSTOIC_rare)
+
+write.csv(ALLSTOIC_rare_df, "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/ALLSTOIC_rare_df.csv")
+
+ALLSTOIC_rare_df2 <- ALLSTOIC_rare_df %>%
+  mutate(phylum = as.character(phylum)) %>%
+  #mutate
+  group_by(Sample) %>%
+  mutate(
+    Total_Abundance = sum(Abundance, na.rm = TRUE),
+    Percentage = (Abundance / Total_Abundance) * 100
+  ) %>%
+  ungroup() %>%
+  select(-Total_Abundance) %>%
+  # Rename phyla with NA to 'unassigned' and those with Abundance < 3 to '< 3%'
+  mutate(
+    Phylum2 = replace(phylum, Percentage < 1, "< 1%")
+  ) %>%
+  # Reorder the phyla so that they are stacked according to abundance
+  mutate(
+    Phylum2 = reorder(Phylum2, Abundance),
+    phylum = reorder(phylum, Abundance)
+  ) %>%
+# Categorize phyla into Group1 (Prokaryotes, Eukaryotes, Protozoa)
+  mutate(
+    Group1 = case_when(
+      phylum %in% c(" Cyanobacteria", " Chloroflexi", " Proteobacteria", " Bacteroidota", 
+                    " Myxococcota", " Armatimonadota", " Acidobacteriota", " Actinobacteriota", 
+                    " Bdellovibrionota", " Planctomycetota", " Verrucomicrobiota", " Dojkabacteria", 
+                    " Deinococcota", "Abditibacteriota", "Gemmatimonadota", "Berkelbacteria", 
+                    " Firmicutes", " Saccharimonadia", " Nitrospirota", " Parcubacteria", "Dependentiae") ~ "Prokaryotes",
+      phylum %in% c(" Chlorophyta", " Streptophyta", " Basidiomycota", " Tardigrada", " Ochrophyta", 
+                    " Chytridiomycota", " Rotifera", "Ascomycota", "Nucleariidea", " Blastocladiomycota", 
+                    " Ichthyosporea", " Opalozoa", " Choanoflagellida (phylum)", " Cryptophyta", " Pseudofungi") ~ "Eukaryotes",
+      phylum %in% c(" Cercozoa", " Ciliophora", " Conosa", " Lobosa", " Dinoflagellata", " Opalozoa") ~ "Protozoa",
+      TRUE ~ "Unassigned"  # Default case for phyla not listed
+    )
+  )
+
+
+total_counts <- rowSums(t(otu_table(ALLSTOIC_rare)))
+
+# Calculate the percentage of each phylum relative to the total read count
+phylum_percentages <- (otu_table(ALLSTOIC_rare) / total_counts) * 100
+
+# Identify the major phyla that represent more than 1% of the total read count
+major_phyla <- rownames(phylum_percentages)[apply(phylum_percentages, 1, function(x) any(x > 1))]
+
+#filter for the major taxa then rarefy
+filtered_physeq <- prune_taxa(major_phyla, ALLSTOIC_rare)
+
+filtered_physeq_df <- psmelt(filtered_physeq)
+
+
+#Need the same color pallete for the taxa
+rarefied_taxa <- unique(filtered_physeq_df$phylum)
+nonrarefied_taxa <- unique(ALLSTOIC_rare_df2$phylum)
+all_taxa <- unique(c(rarefied_taxa, nonrarefied_taxa))
+set.seed(1000)
+
+colors <- get_wants_hue(length(all_taxa))
+taxa_colors <- setNames(colors, all_taxa)
+
+ALLSTOIC_rared_stackbar <- ALLSTOIC_rare_df %>%
+  mutate(phylum = reorder(phylum, Abundance)) %>%
+  ggplot(aes(x= as.factor(DAYOFYEAR), y=Abundance, fill = phylum)) + 
+  geom_bar(stat = 'identity', position = "fill" ) +
+  scale_y_continuous(label=comma) +
+  facet_grid(SITE~TYPE) +
+  scale_fill_manual(values = taxa_colors) +
+  labs(title = "Rarefied library sizes with Phyla >1%", x = "Day", y = "Relative Abundance", fill = "Phyla") +
+  scale_x_discrete(breaks=c(209, 213, 217, 219, 222, 222, 225, 230)) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust=1))
+  
+ALLSTOIC_rared_stackbar
+
+
+```
+
+```{r}
+CC_rarefy
+ICE_rarefy
+
+# Load the necessary libraries
+library(phyloseq)
+library(vegan)
+
+# Example phyloseq object
+phyloseq_obj <- CC_rarefy
+
+# Step 1: Calculate Bray-Curtis distance matrix
+dist_matrix <- phyloseq::distance(phyloseq_obj, method = "bray")
+
+# Step 2: Extract the grouping variable (e.g., SITE)
+sample_data <- sample_data(phyloseq_obj)
+grouping_variable <- sample_data$SITE
+
+# Step 3: Run ANOSIM
+anosim_result <- anosim(dist_matrix, grouping_variable)
+
+# Step 4: Print ANOSIM results
+print(anosim_result)
+
+
+
+
+
+```
+
+
+
+```{r}
+
+#Need to break up the rarefied STOIC data by Eukaryotes, Prokaryotes and Protists, like in Maria's paper. Then throw shannon diversity and maybe an NMDS plot at each
+
+ALLSTOIC_rare_df3 <- ALLSTOIC_rare_df2 %>%
+  group_by(Sample) %>%
+  mutate(Total_Sample_Abundance = sum(Abundance, na.rm = TRUE)) %>%
+  ungroup() %>%
+  mutate(Relative_Abundance = (Abundance / Total_Sample_Abundance)*100)
+
+
+Euk_ALLSTOIC <- ALLSTOIC_rare_df3 %>%
+  filter(Group1 == "Eukaryotes")
+
+write.csv(Euk_ALLSTOIC, "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/Euk_ALLSTOIC_df.csv")
+  
+Prok_ALLSTOIC <- ALLSTOIC_rare_df3 %>%
+  filter(Group1 == "Prokaryotes")
+
+write.csv(Prok_ALLSTOIC, "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/Prok_ALLSTOIC_df.csv")
+
+Prot_ALLSTOIC <- ALLSTOIC_rare_df3 %>%
+  filter(Group1 == "Protozoa")
+
+write.csv(Prot_ALLSTOIC, "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/Prot_ALLSTOIC_df.csv")
+
+
+
+Euk_barplort <- Euk_ALLSTOIC  %>%
+  ggplot(aes(x= as.factor(DAYOFYEAR), y=Relative_Abundance, fill = phylum)) + 
+  geom_bar(stat = 'identity',  position = "stack" ) +
+  scale_y_continuous(label=comma) +
+  facet_grid(SITE~TYPE) +
+  scale_fill_manual(values = taxa_colors) +
+  labs(title = "AllSTOIC Eukaryotes", x = "Day", y = "Relative Abundance (%)", fill = "Eukaryotic Phyla") +
+  scale_x_discrete(breaks=c(209, 213, 217, 219, 222, 222, 225, 230)) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+  
+Euk_barplort
+
+
+# Prokaryotes
+Prok_barplot <- Prok_ALLSTOIC %>%
+  filter(Group1 == "Prokaryotes") %>%
+  ggplot(aes(x= as.factor(DAYOFYEAR), y=Relative_Abundance, fill = phylum)) + 
+  geom_bar(stat = 'identity',  position = "stack" ) +
+  scale_y_continuous(label=comma) +
+  facet_grid(SITE~TYPE) +
+  scale_fill_manual(values = taxa_colors) +
+  labs(title = "ALLSTOIC Prokaryotes", x = "Day", y = "Relative Abundance (%)", fill = "Prokaryotic Phylum") +
+  scale_x_discrete(breaks=c(209, 213, 217, 219, 222, 225, 230)) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+  
+
+Prok_barplot
+
+# Protists
+Prot_barplot <- Prot_ALLSTOIC %>%
+  filter(Group1 == "Protozoa") %>%
+  ggplot(aes(x= as.factor(DAYOFYEAR), y=Relative_Abundance, fill = phylum)) + 
+  geom_bar(stat = 'identity',  position = "stack" ) +
+  scale_y_continuous(label=comma) +
+  facet_grid(SITE~TYPE) +
+  scale_fill_manual(values = taxa_colors) +
+  labs(title = "Relative Abundance of Protists", x = "Day", y = "Realtive Abundance", fill = "Protista Phyla") +
+  scale_x_discrete(breaks=c(209, 213, 217, 219, 222, 225, 230)) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+  
+
+Prot_barplot
+
+```
+
+```{r}
+###Shannon diveristiy
+
+#Eukaryotes
+Euk_ALLSTOIC_phy <- subset_taxa(ALLSTOIC_rare, phylum %in% c(" Chlorophyta", " Streptophyta", " Basidiomycota", " Tardigrada", " Ochrophyta", 
+                    " Chytridiomycota", " Rotifera", "Ascomycota", "Nucleariidea", " Blastocladiomycota", 
+                    " Ichthyosporea", " Opalozoa", " Choanoflagellida (phylum)", " Cryptophyta", " Pseudofungi"))
+
+Euk_div <- diversity(Euk_ALLSTOIC_phy, index = "all")
+
+#Prokaryotes
+Prok_ALLSTOIC_phy <- subset_taxa(ALLSTOIC_rare, phylum %in% c(" Cyanobacteria", " Chloroflexi", " Proteobacteria", " Bacteroidota", 
+                    " Myxococcota", " Armatimonadota", " Acidobacteriota", " Actinobacteriota", 
+                    " Bdellovibrionota", " Planctomycetota", " Verrucomicrobiota", " Dojkabacteria", 
+                    " Deinococcota", "Abditibacteriota", "Gemmatimonadota", "Berkelbacteria", 
+                    " Firmicutes", " Saccharimonadia", " Nitrospirota", " Parcubacteria", "Dependentiae"))
+
+diversity(Prok_ALLSTOIC_phy, index = "all")
+
+#Protists
+Protist_ALLSTOIC_phy <- subset_taxa(ALLSTOIC_rare, phylum %in% c(" Cercozoa", " Ciliophora", " Conosa", " Lobosa", " Dinoflagellata", " Opalozoa"))
+
+diversity(Protist_ALLSTOIC_phy, index = "all")
+
+#Shannon diversity plots 
+
+# Load necessary libraries
+library(phyloseq)
+library(ggplot2)
+
+# Ensure that SITE is treated as a factor
+AC_PHY_ice_rRNA_siteMD@sam_data$SITE <- as.factor(AC_PHY_ice_rRNA_siteMD@sam_data$SITE)
+
+# Calculate richness (Shannon Index) and create the base plot
+richness_df <- plot_richness(
+  ICE_rarefy, 
+  x = "SITE", 
+  measures = c("Shannon")
+)
+
+richness_df$data$SITE <- as.factor(richness_df$data$SITE)
+richness_df$data$DAYOFYEAR <- as.factor(richness_df$data$DAYOFYEAR)
+
+
+# Customize the plot with boxplots and jittered points
+richness_plot <- ggplot(richness_df$data, aes(x = SITE, y = value)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(aes(color = DAYOFYEAR), width = 0.2, alpha = 0.8, size = 2) +  # Jittered points colored by DAYOFYEAR
+  facet_grid(variable ~ TYPE, scales = "free") +  # Facet by diversity measure and TYPE
+  theme_bw() +
+  labs(title = "Ice Shannon Diversity by Site", x = "Site", y = "Shannon Diversity Index") +
+  theme(legend.position = "right",  # Position the legend to the right
+        strip.background = element_rect(fill = "white"),
+        axis.text.x = element_text(angle = 0, vjust = 0, hjust = 0.5))
+
+# Display the plot
+richness_plot
+
+```
+#Add stats on the
+```{r}
+# Load necessary libraries
+library(phyloseq)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+
+##Statistical testing on the Shannon diversity
+richness_data <- richness_df$data #%>%
+  #filter(TYPE == "ice")
+
+# Check normality of the Shannon diversity
+shapiro.test(richness_data$value)
+shapiro.test(CC_rarefy)
+
+# Perform ANOVA to compare Shannon diversity across sites if normal, shapiro > 0.05. If <0.05, then do Kruskal-wallis
+anova_result <- aov(value ~ SITE, data = richness_data)
+summary(anova_result)
+
+#If the ANOVA result is significant, you can proceed with a post-hoc test like Tukey's HSD:
+# Tukey's HSD post-hoc test
+tukey_result <- TukeyHSD(anova_result)
+print(tukey_result)
+
+# Perform Kruskal-Wallis test
+kruskal_result <- kruskal.test(value ~ SITE, data = richness_data)
+print(kruskal_result)
+
+# Perform Dunn's test for pairwise comparisons
+dunn_result <- dunnTest(value ~ SITE, data = richness_data, method = "bonferroni")
+print(dunn_result)
+
+
+
+```
+
+```{r}
+# Check normality using Shapiro-Wilk test
+shapiro_test <- shapiro.test(richness_data$value)
+print(shapiro_test)
+
+# If normality is violated (p-value <= 0.05), use Kruskal-Wallis
+if (shapiro_test$p.value <= 0.05) {
+  # Perform Kruskal-Wallis test
+  kruskal_result <- kruskal.test(value ~ SITE, data = richness_data)
+  print(kruskal_result)
+  
+  # If Kruskal-Wallis is significant, perform Dunn's test
+  if (kruskal_result$p.value <= 0.05) {
+    # Install dunn.test package if not installed
+    if (!requireNamespace("dunn.test", quietly = TRUE)) {
+      install.packages("dunn.test")
+    }
+    library(dunn.test)
+    
+    # Perform Dunn's test for pairwise comparisons
+    dunn_result <- dunnTest(value ~ SITE, data = richness_data, method = "bonferroni")
+    print(dunn_result)
+  }
+  
+} else {
+  # If normality is not violated, use ANOVA and Tukey's HSD
+  anova_result <- aov(value ~ SITE, data = richness_data)
+  print(summary(anova_result))
+  
+  if (summary(anova_result)[[1]][["Pr(>F)"]][1] <= 0.05) {
+    tukey_result <- TukeyHSD(anova_result)
+    print(tukey_result)
+  }
+}
+
+
+
+
+```
+
+
+### Q: PCoA, NMDS and RDA
+
+```{r}
+
+#rRNA and mRNA count data with the following metadata:
+## seqMD - sequencing information like: RUN, libraryprep date, storage temperature - these are non metric
+##siteMD - information both metric and non metric:
+  ## metric is temperature, albedo, cell counts, PAM
+  ## non-metric is site numbers, day of the year.
+##mRNA_MD - mRNA counts as metric values for each of the samples.
+
+## non metric ordination methods are: NMDS and CLuster Analysis (hierarchical K means)
+
+##NMDS for non metric with bray curtis distance for ecological species data
+## PCoA for metric, emphasis on dissimilarity distances
+## CCA for a mixed for both, only good for mRNA_MD stuff.
+
+
+
+ps = PHY_cc_rRNA_siteMD
+
+ps_log <- transform_sample_counts(ps, function(x) log(x + 1))
+  
+# First, extract the abundance matrix from your phyloseq object
+otu_mat <- otu_table(ps_log)
+totu <- t(otu_mat)
+# Apply the Hellinger transformation
+otu_mat_hellinger <- decostand(totu, method = "hellinger")
+rda_otu <- rda(otu_mat_hellinger)
+
+plot(rda_otu)
+
+rda_otu$CCA
+
+psmelt(rda_otu) %>%
+  ggplot() %>%
+  geom_point(aes(x = PC1, y = PC2)) 
+
+# If you need to, you can put this transformed matrix back into a phyloseq object
+otu_table(ps) <- otu_mat_hellinger
+
+set.seed(1)
+dist = "bray"
+ord_meths = c("NMDS", "CCA", "PCoA")
+plist = llply(as.list(ord_meths), function(i, phyloseq, dist){
+        ordi = ordinate(phyloseq, method=i, distance=dist)
+        plot_ordination(phyloseq, ordi, "SITE", color="TYPE")
+}, PHY_cc_rRNA_seqMD, dist)
+
+names(plist) <- ord_meths
+
+
+pdataframe = ldply(plist, function(x){
+    df = x$data[, 1:2]
+    colnames(df) = c("Axis_1", "Axis_2")
+    return(cbind(df, x$data))
+})
+names(pdataframe)[1] = "method"
+
+
+p = ggplot(pdataframe, aes(Axis_1, Axis_2, color=as.factor(libraryprep), shape=as.factor(SITE))) + 
+  geom_point(size=4) +
+  facet_wrap(~method, scales="free") +
+  scale_fill_brewer(type="qual", palette="Set1") +
+  scale_colour_brewer(type="qual", palette="Set1") +
+  labs( shape = "Site", color = "Library Prep", title = "PHY_cc_rRNA_seqMD Libprep") +
+  theme_bw()
+
+p
+
+```
+
+https://david-barnett.github.io/microViz/articles/web-only/ordination.html
+
+```{r}
+
+##PCA with loading vectors and iris plot
+
+#PCA
+#PHY_cc_rRNA_siteMD %>%
+CC_rarefy %>%
+  tax_transform("clr", rank = "phylum") %>%
+  # when no distance matrix or constraints are supplied, PCA is the default/auto ordination method
+  ord_calc() %>%
+  ord_plot(color = "DAYOFYEAR", shape = "SITE", size = 2) +
+  scale_colour_brewer(palette = "Dark2")
+
+
+#ALLSTOIC_rRNA_siteMD_no_site6_TRUE %>%
+ALLSTOIC_rare %>%
+  tax_transform("clr", rank = "phylum") %>%
+  # when no distance matrix or constraints are supplied, PCA is the default/auto ordination method
+  ord_calc() %>%
+  ord_plot(color = "DAYOFYEAR", shape = "SITE", plot_taxa = 1:5, size = 2) +
+  labs(title = "Ice rRNA Phylum level",shape = "Site", color = "Library Preparation Date") +
+  scale_colour_brewer(palette = "Dark2")
+
+#PHY_ice_rRNA_siteMD %>%
+ICE_rarefy %>%
+  tax_transform("clr", rank = "phylum") %>%
+  # when no distance matrix or constraints are supplied, PCA is the default/auto ordination method
+  ord_calc() %>%
+  #ord_plot(color = "TYPE", shape = "SITE", plot_taxa = 1:5, size = 2) %>%
+  ord_plot_iris(tax_level = "phylum", ord_plot = "above", anno_colour = "TYPE")
+```
+
+
+##Phyla bar sites separated
+
+```{r}
+
+
+ALLSTOIC_rRNA_siteMD_no_site6_df %>%
+  ggplot(aes(x= as.factor(DAYOFYEAR), y=Abundance, fill = phylum)) + 
+  geom_bar(position = "fill", stat = 'identity') +
+  geom_vline(xintercept = as.factor(221)) +
+  scale_y_continuous(label=comma) +
+  facet_grid(SITE~TYPE) +
+  scale_fill_manual(values = get_wants_hue(42)) +
+  labs(title = "Biological Replicates, Site separated", x = "Day", y = "Relative Abundance", fill = "Phyla") +
+  scale_x_discrete(breaks=c(209, 213, 217, 219, 221, 222, 225, 230)) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust=1))
+  
+  
+```
+
+
+#Site averaged, dont need this becasue of ANOVA says that the sites are more statistically different from each other than one is over time. 
+
+```{r}
+
+#remove package plyr from the Packages for this group_by to work
+detach("package:plyr", unload = TRUE)
+
+input <- ALLSTOIC_rRNA_seqMD_no_site6_df %>%
+  select(-OTU, - Sample, -NAME) %>%
+  filter(!(FULLNAME %in% c("0807ICE1","0807ICE2","0807ICE3","0807ICE4","0807ICE5","0809ICE1",
+                           "0809ICE2","0809ICE3",
+                           "0809ICE4","0801ICE1", "0809ICE5",
+                           "0805CC1","0810CC1","0810CC5")))
+
+rownames(input) <- NULL
+
+#run below as a chunk
+
+AC_site_avg <- input %>%
+  group_by(TYPE,DAYOFYEAR,SITE,phylum) %>%
+  summarise(Sum = sum(Abundance))
+
+AC_site_avg2 <- AC_site_avg %>%
+  group_by(TYPE,DAYOFYEAR,phylum) %>%
+  summarise(AVG = mean(Sum),
+            Sd = sd(Sum))
+
+AVGSTIE_ALLSTOIC_phyla_bar <- AC_site_avg2 %>%
+  ggplot(aes(x= as.factor(DAYOFYEAR), y=AVG, fill = phylum)) + 
+  geom_bar(position = "fill", stat = 'identity') +
+  #geom_vline(xintercept = as.factor(221)) +
+  scale_y_continuous(label=comma) +
+  facet_grid(~TYPE) +
+  scale_fill_manual(values = get_wants_hue(42)) +
+  labs(title = "Averaged Biological Replicates, All 70 samples", x = "Day", y = "Averaged Hits", fill = "Phyla") +
+  scale_x_discrete(breaks=c(209, 213, 217, 219, 222, 222, 225, 230)) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust=1))
+
+AVGSTIE_ALLSTOIC_phyla_bar
+
+
+```
+
+## Want to look at the algae and the Chytrids for Laura P's work
+
+```{r}
+#I want to sum the phylum and then average the five sites for each day and report
+detach(package:plyr)
+
+#Only algae and chytrids
+EUK_compare_df <- subset(ALLSTOIC_rRNA_siteMD_no_site6_df, subset = phylum %in% c(" Chytridiomycota", " Streptophyta", " Chlorophyta", "Rhizophydiales"))
+
+#Keep sites separate
+
+#Want a df with site, dayofyear, phyla, sum, mean, sd.
+EUK_compare_df_SITESEP <- EUK_compare_df %>%
+  group_by(phylum, SITE, DAYOFYEAR) %>%
+  summarise(Sum = sum(Abundance),
+            Mean = mean(Abundance), 
+            SD = sd(Abundance))
+
+
+vs_plot <- EUK_compare_df_SITESEP %>%
+  ggplot(aes(x = as.factor(DAYOFYEAR), y = Mean, color = phylum)) +
+  geom_point() +
+  geom_errorbar(aes(ymin=(Mean-SD), ymax=(Mean+SD), width=0.2)) +
+  geom_vline(xintercept = 222) +
+  facet_wrap(~SITE) +
+  labs(title = "Average Counts, Streptophyes, Chlorophytes and Chytrids by site", color = "Phyla",
+       y = "Average Counts", x = "Day") +
+  #scale_x_continuous(breaks=c(209, 213, 217, 219, 222, 222, 225, 230)) +
+  theme_classic() +
+  scale_color_manual(values=c('#999999','purple', "blue", "orange")) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust=1))
+
+vs_plot
+
+
+#Combine the five sites as five biological replicates
+EUK_compare_df_SITEAVG <- EUK_compare_df_SITESEP %>%
+  group_by(phylum, DAYOFYEAR) %>%
+  summarise(SUM = sum(Sum),
+            Mean = mean(Sum), 
+            SD = sd(Sum))
+
+
+siteavg_plot <- EUK_compare_df_SITEAVG  %>%
+  ggplot(aes(x = DAYOFYEAR, y = Mean, color = phylum)) +
+  geom_point() +
+  geom_errorbar(aes(ymin=(Mean-SD), ymax=(Mean+SD), width=0.2)) +
+  geom_vline(xintercept = 222) +
+  #facet_wrap(~SITE) +
+  labs(title = "Site Averaged Counts, Chlorophytes, Streptophyes and Chytrids", color = "Phyla",
+       y = "Average Counts", x = "Day") +
+  scale_y_continuous(label=comma) +
+  #scale_x_continuous(breaks=c(209, 213, 217, 219, 222, 225, 230)) +
+  theme_classic() +
+  scale_color_manual(values=c('#999999','purple', 'blue')) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust=1))
+
+siteavg_plot
+  
+  
+```
+
+
+
+
+
+## Look at the minor differences between Katie25 and STOIC25 to determine what percent of differences is up to the sequencer/day changes. There is less than a 0.01% difference
+
+```{r}
+#This is to just look at STOIC25 and KATIE25 to determine sequencing variance on the sample sample.
+ALLSTOIC_mRNA_siteMD25 = subset_samples(ALLSTOIC_mRNA_siteMD, FULLNAME == "0801ICE5")
+ALLSTOIC_rRNA_siteMD25 = subset_samples(ALLSTOIC_rRNA_siteMD, FULLNAME == "0801ICE5")
+ 
+
+physeq25_df <- psmelt(ALLSTOIC_rRNA_siteMD25)
+
+
+###----Richness all----
+
+richness_plot <- plot_richness(
+  ALLSTOIC_rare, x= "DAYOFYEAR", color = "SITE", shape = "TYPE",
+  measures=c("Observed","Shannon","Simpson","InvSimpson")
+  )
+
+Phylseq25_richness_plot <- richness_plot + geom_boxplot(
+  data = richness_plot$data, aes(color = NULL), alpha = 0.05)+
+  theme_bw()+
+  theme(legend.title = element_blank())+
+  theme(legend.position = "right") +
+  theme(strip.background = element_rect(fill="white" )) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+    scale_colour_brewer(palette = "Dark2")
+
+Phylseq25_richness_plot
+
+physeq25_richness = estimate_evenness()
+```
+
+## mRNA counts as phyloseq obj : 
+
+```{r}
+#### ICE #####
+
+#Antibacterial
+card_ICE_COUNTS_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/forphyloseq/CARD_ICE_COUNTS.csv"
+card_ICE_TAXA_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/forphyloseq/CARD_ICE_TAXA.csv"
+
+card_ICE_counts <- read_csv(card_ICE_COUNTS_CSV ) |>
+  phyloseq::otu_table(taxa_are_rows = TRUE)
+card_ICE_taxa <- readr::read_delim(card_ICE_TAXA_CSV, delim = ";") |>
+  as.matrix() |>
+  phyloseq::tax_table()
+
+card_ICE_phloseq <- phyloseq(card_ICE_counts, card_ICE_taxa, icesiteMD)
+card_ICE_phloseq <- subset_samples(card_ICE_phloseq, SITE != 6)
+
+#####CAZy####
+Cazy_ICE_COUNTS_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/forphyloseq/CAZy_ICE_COUNTS.csv"
+Cazy_ICE_TAXA_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/forphyloseq/CAZy_ICE_TAXA.csv"
+
+Cazy_ICE_counts <- read_csv(Cazy_ICE_COUNTS_CSV ) |>
+  phyloseq::otu_table(taxa_are_rows = TRUE)
+Cazy_ICE_taxa <- readr::read_delim(Cazy_ICE_TAXA_CSV, delim = ";") |>
+  as.matrix() |>
+  phyloseq::tax_table()
+
+CAZY_ICE_phyloseq <- phyloseq(Cazy_ICE_counts, Cazy_ICE_taxa, icesiteMD )
+CAZY_ICE_phyloseq <- subset_samples(CAZY_ICE_phyloseq, SITE != 6)
+
+
+#####Methane
+Methane_ICE_COUNTS_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/forphyloseq/MCycDB_ICE_COUNTS.csv"
+Methane_ICE_TAXA_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/forphyloseq/MCycDB_ICE_TAXA.csv"
+
+
+Methane_ICE_counts <- read_csv(Methane_ICE_COUNTS_CSV  ) |>
+  phyloseq::otu_table(taxa_are_rows = TRUE)
+Methane_ICE_taxa <- readr::read_delim(Methane_ICE_TAXA_CSV, delim = ";") |>
+  as.matrix() |>
+  phyloseq::tax_table() 
+
+Methane_ICE_phyloseq <- phyloseq(Methane_ICE_counts, Methane_ICE_taxa, icesiteMD)
+Methane_ICE_phyloseq <- subset_samples(Methane_ICE_phyloseq, SITE != 6)
+
+
+#####Nitrogen
+NCyc_ICE_COUNTS_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/forphyloseq/NCyc_ICE_COUNTS.csv"
+NCyc_ICE_TAXA_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/forphyloseq/NCyc_ICE_TAXA.csv"
+
+Ncy_ICE_counts <- read_csv(NCyc_ICE_COUNTS_CSV ) |>
+  phyloseq::otu_table(taxa_are_rows = TRUE)
+Ncy_ICE_taxa <- readr::read_delim(NCyc_ICE_TAXA_CSV, delim = ";") |>
+  as.matrix() |>
+  phyloseq::tax_table() 
+
+
+Ncy_ICE_phyloseq <- phyloseq(Ncy_ICE_counts, Ncy_ICE_taxa, icesiteMD)
+Ncy_ICE_phyloseq <- subset_samples(Ncy_ICE_phyloseq, SITE != 6)
+
+#Phosphorous
+Phos_ice_COUNTS_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/forphyloseq/PCycDB_ICE_COUNTS.csv"
+Phos_ice_TAXA_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/forphyloseq/PCycDB_ICE_TAXA.csv"
+
+
+Phos_ice_counts <- read_csv(Phos_ice_COUNTS_CSV ) |>
+  phyloseq::otu_table(taxa_are_rows = TRUE)
+Phos_ice_taxa <- readr::read_delim(Phos_ice_TAXA_CSV, delim = ";") |>
+  as.matrix() |>
+  phyloseq::tax_table() 
+
+Pcy_ICE_phyloseq <- phyloseq(Phos_ice_counts, Phos_ice_taxa, icesiteMD )
+Pcy_ICE_phyloseq <- subset_samples(Pcy_ICE_phyloseq, SITE != 6)
+
+
+####Sulfur####
+Sulf_ice_COUNTS_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/forphyloseq/SCycDB_ICE_COUNTS.csv"
+Sulf_ice_TAXA_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/forphyloseq/SCycDB_ICE_TAXA.csv"
+
+Sulfur_ice_counts <- read_csv(Sulf_ice_COUNTS_CSV ) |>
+  phyloseq::otu_table(taxa_are_rows = TRUE)
+Sulfur_ice_taxa <- readr::read_delim(Sulf_ice_TAXA_CSV, delim = ";") |>
+  as.matrix() |>
+  phyloseq::tax_table() 
+
+Sulf_ICE_phyloseq <- phyloseq(Sulfur_ice_counts, Sulfur_ice_taxa, icesiteMD)
+Sulf_ICE_phyloseq <- subset_samples(Sulf_ICE_phyloseq, SITE != 6)
+####
+
+#######Plastic#####
+plastic_ICE_COUNTS_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/forphyloseq/plasticdb_ICE_COUNTS.csv"
+plastic_ICE_TAXA_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/forphyloseq/plasticdb_ICE_TAXA.csv"
+
+Plast_ice_counts <- read_csv(plastic_ICE_COUNTS_CSV ) |>
+  phyloseq::otu_table(taxa_are_rows = TRUE)
+Plast_ice_taxa <- readr::read_delim(plastic_ICE_TAXA_CSV, delim = ";") |>
+  as.matrix() |>
+  phyloseq::tax_table() 
+
+plastic_ICE_phyoseq <- phyloseq(Plast_ice_counts, Plast_ice_taxa, icesiteMD)
+plastic_ICE_phyoseq <- subset_samples(plastic_ICE_phyoseq, SITE != 6)
+######
+
+card_ICE_phloseq
+CAZY_ICE_phyloseq 
+Ncy_ICE_phyloseq
+Sulf_ICE_phyloseq
+Pcy_ICE_phyloseq
+plastic_ICE_phyoseq
+Methane_ICE_phyloseq
+
+ICE_mRNA_phyloseq <- merge_phyloseq(card_ICE_phloseq, CAZY_ICE_phyloseq, Ncy_ICE_phyloseq, Sulf_ICE_phyloseq, Pcy_ICE_phyloseq, plastic_ICE_phyoseq, Methane_ICE_phyloseq)
+
+
+
+```
+
+```{r}
+#### CC #####
+
+#Antibacterial
+# card_CC_COUNTS_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/forphyloseq/CARD_CC_COUNTS.csv"
+# card_CC_TAXA_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/forphyloseq/CARD_CC_TAXA.csv"
+# 
+# card_CC_counts <- read_csv(card_CC_COUNTS_CSV ) |>
+#   phyloseq::otu_table(taxa_are_rows = TRUE)
+# card_CC_taxa <- readr::read_delim(card_CC_TAXA_CSV, delim = ";") |>
+#   as.matrix() |>
+#   phyloseq::tax_table()
+
+# card_CC_phloseq <- phyloseq(card_CC_counts, card_CC_taxa, ccsiteMD)
+# card_CC_phloseq <- subset_samples(card_CC_phloseq, SITE != 6)
+
+#####CAZy####
+Cazy_CC_COUNTS_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/forphyloseq/CAZy_CC_COUNTS.csv"
+Cazy_CC_TAXA_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/forphyloseq/CAZy_CC_TAXA.csv"
+
+Cazy_CC_counts <- read_csv(Cazy_CC_COUNTS_CSV ) |>
+  phyloseq::otu_table(taxa_are_rows = TRUE)
+Cazy_CC_taxa <- readr::read_delim(Cazy_CC_TAXA_CSV, delim = ";") |>
+  as.matrix() |>
+  phyloseq::tax_table()
+
+CAZY_CC_phyloseq <- phyloseq(Cazy_CC_counts, Cazy_CC_taxa, ccsiteMD )
+CAZY_CC_phyloseq <- subset_samples(CAZY_CC_phyloseq, SITE != 6)
+
+
+#####Methane
+Methane_CC_COUNTS_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/forphyloseq/MCycDB_CC_COUNTS.csv"
+Methane_CC_TAXA_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/forphyloseq/MCycDB_CC_TAXA.csv"
+
+
+Methane_CC_counts <- read_csv(Methane_CC_COUNTS_CSV  ) |>
+  phyloseq::otu_table(taxa_are_rows = TRUE)
+Methane_CC_taxa <- readr::read_delim(Methane_CC_TAXA_CSV, delim = ";") |>
+  as.matrix() |>
+  phyloseq::tax_table() 
+
+Methane_CC_phyloseq <- phyloseq(Methane_CC_counts, Methane_CC_taxa, ccsiteMD)
+Methane_CC_phyloseq <- subset_samples(Methane_CC_phyloseq, SITE != 6)
+
+
+#####Nitrogen
+NCyc_CC_COUNTS_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/forphyloseq/NCyc_CC_COUNTS.csv"
+NCyc_CC_TAXA_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/forphyloseq/NCyc_CC_TAXA.csv"
+
+Ncy_CC_counts <- read_csv(NCyc_CC_COUNTS_CSV ) |>
+  phyloseq::otu_table(taxa_are_rows = TRUE)
+Ncy_CC_taxa <- readr::read_delim(NCyc_CC_TAXA_CSV, delim = ";") |>
+  as.matrix() |>
+  phyloseq::tax_table() 
+
+
+Ncy_CC_phyloseq <- phyloseq(Ncy_CC_counts, Ncy_CC_taxa, ccsiteMD)
+Ncy_CC_phyloseq <- subset_samples(Ncy_CC_phyloseq, SITE != 6)
+
+#Phosphorous
+Phos_CC_COUNTS_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/forphyloseq/PCycDB_CC_COUNTS.csv"
+Phos_CC_TAXA_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/forphyloseq/PCycDB_CC_TAXA.csv"
+
+
+Phos_CC_counts <- read_csv(Phos_CC_COUNTS_CSV ) |>
+  phyloseq::otu_table(taxa_are_rows = TRUE)
+Phos_CC_taxa <- readr::read_delim(Phos_CC_TAXA_CSV, delim = ";") |>
+  as.matrix() |>
+  phyloseq::tax_table() 
+
+Pcy_CC_phyloseq <- phyloseq(Phos_CC_counts, Phos_CC_taxa, ccsiteMD )
+Pcy_CC_phyloseq <- subset_samples(Pcy_CC_phyloseq, SITE != 6)
+
+
+####Sulfur####
+Sulf_CC_COUNTS_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/forphyloseq/SCycDB_CC_COUNTS.csv"
+Sulf_CC_TAXA_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/forphyloseq/SCycDB_CC_TAXA.csv"
+
+Sulfur_CC_counts <- read_csv(Sulf_CC_COUNTS_CSV ) |>
+  phyloseq::otu_table(taxa_are_rows = TRUE)
+Sulfur_CC_taxa <- readr::read_delim(Sulf_CC_TAXA_CSV, delim = ";") |>
+  as.matrix() |>
+  phyloseq::tax_table() 
+
+Sulf_CC_phyloseq <- phyloseq(Sulfur_CC_counts, Sulfur_CC_taxa, ccsiteMD)
+Sulf_CC_phyloseq <- subset_samples(Sulf_CC_phyloseq, SITE != 6)
+####
+
+#######Plastic#####
+plastic_CC_COUNTS_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/forphyloseq/plasticdb_CC_COUNTS.csv"
+plastic_CC_TAXA_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/forphyloseq/plasticdb_CC_TAXA.csv"
+
+Plast_CC_counts <- read_csv(plastic_CC_COUNTS_CSV ) |>
+  phyloseq::otu_table(taxa_are_rows = TRUE)
+Plast_CC_taxa <- readr::read_delim(plastic_CC_TAXA_CSV, delim = ";") |>
+  as.matrix() |>
+  phyloseq::tax_table() 
+
+plastic_CC_phyoseq <- phyloseq(Plast_CC_counts, Plast_CC_taxa, ccsiteMD)
+######
+
+#card_CC_phloseq
+CAZY_CC_phyloseq
+Ncy_CC_phyloseq
+Sulf_CC_phyloseq
+Pcy_CC_phyloseq
+plastic_CC_phyoseq
+Methane_CC_phyloseq
+
+
+CC_mRNA_phyloseq <- merge_phyloseq(CAZY_CC_phyloseq, Ncy_CC_phyloseq, Sulf_CC_phyloseq, Pcy_CC_phyloseq, plastic_CC_phyoseq, Methane_CC_phyloseq)
+
+```
+
+#Combine mRNA phyloseqs 
+```{r}
+
+CAZY <- merge_phyloseq(CAZY_CC_phyloseq, CAZY_ICE_phyloseq)
+Ncy <- merge_phyloseq(Ncy_CC_phyloseq, Ncy_ICE_phyloseq)
+Sulfur <- merge_phyloseq(Sulf_CC_phyloseq, Sulf_ICE_phyloseq)
+Pcy <- merge_phyloseq(Pcy_CC_phyloseq, Pcy_ICE_phyloseq)
+plastic <- merge_phyloseq(plastic_CC_phyoseq, plastic_ICE_phyoseq)
+methane <- merge_phyloseq( Methane_CC_phyloseq, Methane_ICE_phyloseq)
+
+
+```
+
+
+
+
+
+
+
+
+#Maybe remove
+####Test with NCyc 
+```{r} ::label::NCyc counts as test of mRNA for phyloseq obj}
+
+NCyc_COUNTS_CSV <- "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional/mRNA_phyloseq/topcycles/NCyc_cc_counts.csv"
+NCyc_TAXA_CSV <- "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional/mRNA_phyloseq/topcycles/NCyc_cc_taxa.csv"
+
+Ncy_cc_counts <- read_csv(NCyc_COUNTS_CSV ) |>
+  phyloseq::otu_table(taxa_are_rows = TRUE)
+Ncy_cc_taxa <- readr::read_delim(NCyc_TAXA_CSV, delim = ";") |>
+  as.matrix() |>
+  phyloseq::tax_table() 
+
+##
+
+NCyc_ice_COUNTS_CSV <- "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional/mRNA_phyloseq/topcycles/NCyc_ice_counts.csv"
+NCyc_ice_TAXA_CSV <- "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional/mRNA_phyloseq/topcycles/NCyc_ice_taxa.csv"
+
+Ncy_ice_counts <- read_csv(NCyc_ice_COUNTS_CSV ) |>
+  phyloseq::otu_table(taxa_are_rows = TRUE)
+Ncy_ice_taxa <- readr::read_delim(NCyc_ice_TAXA_CSV, delim = ";") |>
+  as.matrix() |>
+  phyloseq::tax_table() 
+
+```
+#NCyc
+```{r}
+
+plot_bar(Ncy, x="DAYOFYEAR", y= "Abundance", fill = "Level1") + 
+  geom_bar( stat = "identity") +
+  facet_grid(TYPE~SITE) +
+  scale_fill_manual(values =get_wants_hue(7)) +
+  scale_y_continuous(label=comma) +
+  labs(title = "NCyc", x = "Day", y = "Hits") +
+  #scale_x_continuous(breaks=c(209, 213, 217, 219, 222, 225, 230)) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust=1))
+
+
+Merged_NCyc_phyloseq_3 <- subset_taxa(Merged_NCyc_phyloseq_2, Level1 == "Nitrogen fixation")
+
+
+nitfix_plot <- psmelt(Ncy) %>%
+  filter(Abundance != 0) %>%
+  group_by(Level1, TYPE, NAME, SITE, DAYOFYEAR) %>%
+  summarise(Sum = sum(Abundance))
+
+  
+ggplot(nitfix_plot) +
+  geom_point(aes(x = DAYOFYEAR, y = Sum, color = Level1)) + # Adds scatter plot points
+  facet_grid(TYPE~ SITE, scales = "free") + # Facets by SITE
+  theme_Publication() + # Uses a minimal theme
+  labs(x = "Day", y = "Abundance", title = "Nitrogen Cycles") +
+  theme(axis.text.x = element_text(angle = 45, hjust=1)) +
+  scale_color_manual(values = get_wants_hue(6))
+  
+
+
+```
+####DESEQ2####
+```{r}librarys
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("DESeq2")
+BiocManager::install("apeglm")
+
+library(DESeq2)
+library(dplyr)
+library(pheatmap)
+library(RColorBrewer)
+```
+####ICE DESeq
+```{r}
+#Small MD file, remove KATIE25
+ice_MD_full <- ice_MD_CSV %>%
+  filter(SEQUENCEFILE != "KATIE25") %>%
+  select(SEQUENCEFILE, FULLNAME, DAYOFYEAR, SITE)
+
+ice_MD <- column_to_rownames(ice_MD, "SEQUENCEFILE")
+
+#DAYOFYEAR is continuous variable
+#ice_MD$DAYOFYEAR <- scale(ice_MD$DAYOFYEAR, center = TRUE, scale = TRUE)
+
+#SITE is a categorical variable
+ice_MD$SITE <- factor(ice_MD$SITE)
+ice_MD$FULLNAME <- factor(ice_MD$FULLNAME)
+
+#NEED the counts table with the contig ID as the first column (as rownames) for DESeq
+ice_rRNA_counts_CSV <- read_csv("/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/crest4_results/ice_counts_ID_forDeseq2.csv")
+
+ice_rRNA_counts <-  separate(ice_rRNA_counts_CSV, col = taxonomy, into = c("kingdom", "phylum", "class", "order", "family", "genus", "species"), sep = "; ")
+
+
+ice_rRNA_ID_taxa <- ice_rRNA_counts %>%
+  select(ContigID, phylum, class) %>%
+  mutate(GENE = paste(phylum,'_',class)) %>%
+  mutate(index = ave(GENE, FUN = seq_along)) %>%
+  mutate(UNIQGENE = if_else(index > 1, paste(phylum, "_", class, "_", index, sep = ""), ContigID)) %>%
+  mutate(UNIQGENE = str_replace_all(UNIQGENE, pattern = c("p__" = "", "c__" = ""))) %>% # Remove "p__" and "c__"
+  select(-index, -phylum, -class, -GENE)
+
+
+ice_rRNA_counts  <- ice_rRNA_counts %>% 
+  select(-KATIE25, -kingdom, -phylum, -class, -order, -family, -genus, -species)
+
+ice_rRNA_counts <- column_to_rownames(ice_rRNA_counts , "ContigID")
+
+countdata_matrix <- as.matrix(ice_rRNA_counts)
+
+###mRNA####
+ice_mRNA_counts_CSV <- read_csv("/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/NCyc_matches_annotated.csv")
+ice_mRNA_counts_CSV <- read_csv("/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/MCycDB_matches_annotated.csv")
+ice_mRNA_counts_CSV <- read_csv("/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/PCycDB_matches_annotated.csv")
+ice_mRNA_counts_CSV <- read_csv("/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/plasticDB_matches_annotated.csv")
+ice_mRNA_counts_CSV <- read_csv("/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/SCycDB_matches_annotated.csv")
+ice_mRNA_counts_CSV <- read_csv("/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/CAZy_matches_annotated.csv")
+ice_mRNA_counts_CSV <- read_csv("/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional/generic_matches_IBP_withnames.csv")
+
+
+ice_mRNA_ID_taxa <- ice_mRNA_counts_CSV %>%
+  select(ContigID, Level1, Level2) %>%
+  mutate(GENE = paste(Level1,'_',Level2)) %>%
+  mutate(index = ave(GENE, FUN = seq_along)) %>%
+  mutate(UNIQGENE = if_else(index > 1, paste(Level1, "_", Level2, "_", index, sep = ""), ContigID)) %>%
+  select(-index, -Level1, - Level2, -GENE)
+  
+ice_mRNA_counts  <- ice_mRNA_counts_CSV %>% 
+  select(-Level1, -Level2, -KATIE25)
+
+ice_mRNA_counts <- column_to_rownames(ice_mRNA_counts , "ContigID")
+
+countdata_matrix <- as.matrix(ice_mRNA_counts)
+
+#Need this to be true 
+all(colnames(countdata_matrix) == rownames(ice_MD))
+
+#Construct the DESeqDataSet
+IBP_ICE_dds <- DESeqDataSetFromMatrix(countData = countdata_matrix,
+                                colData = ice_MD,
+                                design = ~ SITE)
+
+IBP_ICE_dds$SITE <- relevel(IBP_ICE_dds$SITE, ref = "1")
+
+### run DESeq 
+IBP_ICE_dds_des <- DESeq(IBP_ICE_dds)
+
+
+###deseq2 objs
+NCyc_ICE_dds_des
+MCyc_ICE_dds_des
+PCyc_ICE_dds_des
+SCyc_ICE_dds_des 
+CAzy_ICE_dds_des
+rRNA_ICE_dds_des
+IBP_ICE_dds_des
+
+```
+
+####CRYOCONITE DESeq
+```{r}
+#Small MD file
+cc_MD_full <- cc_MD_CSV %>%
+  select(SEQUENCEFILE, FULLNAME, DAYOFYEAR, SITE)
+
+cc_MD <- column_to_rownames(cc_MD_full, "SEQUENCEFILE")
+
+#SITE is a categorical variable
+cc_MD$SITE <- factor(cc_MD$SITE)
+cc_MD$FULLNAME <- factor(cc_MD$FULLNAME)
+
+#NEED the counts table with the contig ID as the first column (as rownames) for DESeq
+cc_rRNA_counts_CSV <- read_csv("/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/crest4_results/cc_counts_ID_forDeseq2.csv")
+
+cc_rRNA_counts <-  separate(cc_rRNA_counts_CSV, col = taxonomy, into = c("kingdom", "phylum", "class", "order", "family", "genus", "species"), sep = "; ")
+
+cc_rRNA_ID_taxa <- cc_rRNA_counts %>%
+  select(ContigID, phylum, class) %>%
+  mutate(GENE = paste(phylum,'_',class)) %>%
+  mutate(index = ave(GENE, FUN = seq_along)) %>%
+  mutate(UNIQGENE = if_else(index > 1, paste(phylum, "_", class, "_", index, sep = ""), ContigID)) %>%
+  mutate(UNIQGENE = str_replace_all(UNIQGENE, pattern = c("p__" = "", "c__" = ""))) %>% # Remove "p__" and "c__"
+  select(-index, -phylum, -class, -GENE)
+
+
+cc_rRNA_counts  <- cc_rRNA_counts %>% 
+
+cc_rRNA_counts <- column_to_rownames(cc_rRNA_counts , "ContigID")
+
+countdata_matrix <- as.matrix(cc_rRNA_counts)
+
+cc_rRNA_counts  <- cc_rRNA_counts_CSV %>% 
+  select(-taxonomy)
+
+cc_rRNA_counts <- column_to_rownames(cc_rRNA_counts , "ContigID")
+
+countdata_matrix <- as.matrix(cc_rRNA_counts)
+
+###mRNA####
+#cc_mRNA_counts_CSV <- read_csv("/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/NCyc_matches_annotated.csv")
+cc_mRNA_counts_CSV <- read_csv("/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/MCycDB_matches_annotated.csv")
+#cc_mRNA_counts_CSV <- read_csv("/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/PCycDB_matches_annotated.csv")
+#cc_mRNA_counts_CSV <- read_csv("/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/plasticDB_matches_annotated.csv")
+#cc_mRNA_counts_CSV <- read_csv("/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/SCycDB_matches_annotated.csv")
+#cc_mRNA_counts_CSV <- read_csv("/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/CC/diamond_functional_summed/CAZy_matches_annotated.csv")
+
+cc_mRNA_ID_taxa_temp <- cc_mRNA_counts_CSV %>%
+  #select(ContigID, Level1, Level2) %>%
+  mutate(GENE = paste(Level1,'_',Level2)) %>%
+  mutate(index = ave(GENE, FUN = seq_along)) %>%
+  mutate(UNIQGENE = if_else(index > 1, paste(Level1, "_", Level2, "_", index, sep = ""), ContigID)) %>%
+  mutate(ID = if_else(index > 1, paste(ContigID, "_", index, sep = ""), ContigID)) %>%
+  select(-index, -Level1, - Level2, -GENE)
+  
+cc_mRNA_ID_taxa <- cc_mRNA_ID_taxa_temp %>%
+  select(ID, UNIQGENE) 
+
+
+cc_mRNA_counts  <- cc_mRNA_ID_taxa_temp %>% 
+  select( -ContigID,  -UNIQGENE ) %>% # , -Level3)
+  column_to_rownames("ID")
+
+
+countdata_matrix <- as.matrix(cc_mRNA_counts)
+
+#Need this to be true 
+all(colnames(countdata_matrix) == rownames(cc_MD))
+
+#Construct the DESeqDataSet
+MCyc_CC_dds <- DESeqDataSetFromMatrix(countData = countdata_matrix,
+                                colData = cc_MD,
+                                design = ~ SITE)
+
+
+MCyc_CC_dds$SITE <- relevel(CAzy_CC_dds$SITE, ref = "1")
+
+### run DESeq 
+MCyc_CC_dds_des <- DESeq(MCyc_CC_dds)
+
+
+
+
+###DESeq2 objects for cc
+rRNA_cc_dds_deseq
+NCyc_cc_dds_deseq
+PCyc_CC_dds_des # the only significant DE gene was 1182553.XP_007742998.1; cant make a pheatmap with that
+SCyc_CC_dds_des # te only significatn DE gene was 293227.XP_008716592.1; cant make a phatmap with that
+CAzy_CC_dds_des
+MCyc_CC_dds_des
+
+
+```
+
+####Pheatmap
+```{r}
+
+#Change this to one of the above deseq objs 
+dds_deseq <-IBP_ICE_dds_des
+
+
+# Perform DESeq2 analysis
+res <- results(dds_deseq,
+  #contrast = c("SITE", "4", "5"),
+  alpha = 0.05)
+
+# Convert to data frame and add threshold column
+res_all <- as.data.frame(res) %>%
+  mutate(threshold = padj < 0.05)
+
+# Subset the results to only return the significant genes with p-adjusted values less than 0.05
+res_sig <- subset(res_all, padj < 0.06)
+
+# Subset normalized counts to significant genes
+sig_norm_counts <- ice_mRNA_counts[rownames(res_sig),]
+
+# Choose heatmap color palette
+heat_colors <- brewer.pal(n = 5, name = "YlOrRd")
+
+#To merge the name of the gene with the significant gene DEs you have to change the rownames back to a col for a moment
+sig_norm_counts$ContigID <- rownames(sig_norm_counts)
+
+# Merge based on the new ID column
+sig_norm_counts_annot <- left_join(sig_norm_counts, ice_mRNA_ID_taxa, by = "ContigID")
+
+# Optionally, set the ID column as row names again and remove it from the dataframe
+sig_norm_counts_annot <- sig_norm_counts_annot %>%
+  select(-ContigID) 
+
+sig_norm_counts_annot <- sig_norm_counts_annot %>%
+  column_to_rownames("UNIQGENE")
+
+annotation_row = ice_MD_full %>%
+  select(-FULLNAME)
+
+colnames <- names(annotation_row)
+
+annotation_row[colnames] <- lapply(annotation_row[colnames], factor)
+
+annotation_row <- annotation_row %>%
+  column_to_rownames("SEQUENCEFILE")
+
+anno_colors <- list(SITE=c("1"="blue", "2"="indianred3", "3"="tan1", "4"="yellowgreen", "5"="purple2"), 
+                    DAYOFYEAR=c("209"="pink",
+                                "213"="magenta",
+                                "217"="pink3",
+                                "219"="cyan",
+                                "222"="orchid4",
+                                "225"="mediumorchid2",
+                                "230" ="peachpuff"))
+
+# Plot heatmap
+pheatmap(
+  sig_norm_counts_annot,
+  color = heat_colors,
+  cluster_rows = FALSE,
+  show_rownames = TRUE,
+  boarder_color = "black",
+  annotation_col = annotation_row,
+  annotation_colors = anno_colors,
+  scale = "row",
+  border_color = TRUE)
+
+
+```
+
+
+##Volcano plots for DE
+```{r}
+library(DESeq2)
+library(ggplot2)
+library(dplyr)
+
+setwd('/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/')
+
+#Change this to the db your doing DE on, so that the file and dir names will be the same.
+mRNA_type <- "Ncy"
+
+
+# Function to perform DESeq2 analysis for a given site comparison and create a volcano plot
+create_and_save_volcano_plot <- function(dds_deseq, site_x, site_y, alpha = 0.01, plot_directory = sprintf("DE_%s_volcano_plots", mRNA_type)) {
+  # Ensure the plot directory exists
+  if (!dir.exists(plot_directory)) {
+    dir.create(plot_directory)
+  }
+  
+  # Perform DESeq2 analysis
+  res <- results(dds_deseq, 
+                 contrast = c("SITE", as.character(site_x), as.character(site_y)),
+                 alpha = alpha)
+  
+  # Convert to data frame and add threshold column
+  res_all <- as.data.frame(res) %>%
+    mutate(threshold = padj < 0.05)
+  
+  # Create volcano plot
+  p <- ggplot(res_all) + 
+    geom_point(aes(x = log2FoldChange, y = -log10(padj), color = threshold)) + 
+    scale_color_manual(values = c("FALSE" = "grey", "TRUE" = "red")) +
+    labs(x = "log2 fold change",
+         y = "-log10 adjusted p-value",
+         title = sprintf("ICE SITE %s %d vs %d", mRNA_type, site_x, site_y)) +
+    theme(legend.position = "none", 
+          plot.title = element_text(size = rel(1.5), hjust = 0.5), 
+          axis.title = element_text(size = rel(1.25)))
+  
+  # Save plot
+  plot_filename <- sprintf("%s/volcano_plot_SITE%d_vs_SITE%d.png", plot_directory, site_x, site_y)
+  ggsave(plot_filename, plot = p, width = 10, height = 6)
+  
+  cat(sprintf("Volcano plot saved: %s\n", plot_filename))
+}
+
+# Loop over all unique site combinations
+for (x in 1:5) {
+  for (y in 1:5) {
+    if (x != y) { # Ensure X and Y are not the same
+      create_and_save_volcano_plot(dds_deseq, x, y)
+    }
+  }
+}
+
+```
+#Make it a grid
+```{r}
+library(patchwork)
+library(ggplot2)
+library(png)
+library(grid)
+
+# Function to read an image file and convert it to a ggplot object
+image_to_ggplot <- function(filename) {
+  if (!file.exists(filename)) {
+    # Return an empty plot with no title if the file does not exist
+    return(ggplot() + theme_void())
+  }
+  
+  img <- readPNG(filename)
+  g <- rasterGrob(img, width=unit(1,"npc"), height=unit(1,"npc"))
+  
+  return(ggplot() + 
+           annotation_custom(g, -Inf, Inf, -Inf, Inf) + 
+           theme_void())
+}
+
+# Initialize an empty list to store all the ggplot objects
+plots_list <- list()
+
+plot_directory <- sprintf("DE_%s_volcano_plots", mRNA_type)
+for (x in 1:5) {
+  for (y in 1:5) {
+    plot_filename <- sprintf("%s/volcano_plot_SITE%d_vs_SITE%d.png", plot_directory, x, y)
+    plots_list[[length(plots_list) + 1]] <- image_to_ggplot(plot_filename)
+  }
+}
+
+# Combine all plots into a single plot object
+plot_grid <- wrap_plots(plots_list, ncol = 5)
+
+# Save the combined plot
+combined_plot_filename <- sprintf("/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/figures/DE_grid_plots/combined_CC_%s.png", mRNA_type)
+ggsave(combined_plot_filename, plot_grid, width = 20, height = 20)
+cat("Combined plot saved:", combined_plot_filename)
+
+```
+
+
+```{r}
+#Get DESeq results as an R dataframe
+deseq_results <- as.data.frame(res)
+
+#Order
+deseq_results_ordered <- deseq_results[order(deseq_results$pvalue),]
+head(deseq_results_ordered, n =20)
+
+#Take the most statistically significant gene expressions.
+filtered <- deseq_results_ordered %>%
+  filter(deseq_results_ordered$padj < 0.05)
+#How many significant genes?
+dim(filtered)
+
+#Save file
+write.csv(deseq_results_ordered, '/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/deseq_results.csv')
+write.csv(filtered, '/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/deseq_filtered_results.csv')
+
+#####
+#Visualize expression
+
+
+tesst <- subset_samples(Ncy, )
+
+diagdds = phyloseq_to_deseq2(Ncy_ICE_phyloseq, ~SITE)
+diagdds = DESeq(diagdds, test="Wald", fitType="parametric")
+
+res = results(diagdds, cooksCutoff = FALSE)
+alpha = 0.01
+sigtab = res[which(res$padj < alpha), ]
+sigtab = cbind(as(sigtab, "data.frame"), as(tax_table(Ncy)[rownames(sigtab), ], "matrix"))
+head(sigtab)
+
+
+dim(sigtab)
+
+library("ggplot2")
+theme_set(theme_bw())
+scale_fill_discrete <- function(palname = "Set1", ...) {
+    scale_fill_brewer(palette = palname, ...)
+}
+# Phylum order
+x = tapply(sigtab$log2FoldChange, sigtab$Level1, function(x) max(x))
+x = sort(x, TRUE)
+sigtab$Phylum = factor(as.character(sigtab$Level1), levels=names(x))
+# Genus order
+x = tapply(sigtab$log2FoldChange, sigtab$Level2, function(x) max(x))
+x = sort(x, TRUE)
+sigtab$Genus = factor(as.character(sigtab$Level2), levels=names(x))
+ggplot(sigtab, aes(x=Genus, y=log2FoldChange, color=Phylum)) + geom_point(size=6) + 
+  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust=0.5))
+
+
+```
+
+
+##TOP CYCLES - mRNA counts
+```{r}
+
+ALLSTOIC_mRNA <- merge_phyloseq(CC_mRNA_phyloseq, ICE_mRNA_phyloseq)
+
+mRNA_topcylces <- merge_phyloseq(CAZY, Ncy, Pcy, Sulfur)
+
+mRNA_topcylces_df <- ps_melt(mRNA_topcylces)
+
+
+mRNA_topcylces_df %>%
+  ggplot(aes(x= as.factor(DAYOFYEAR), y=Abundance, fill = Level1)) + 
+  geom_bar(stat = "identity") +
+  facet_grid(SITE~TYPE) +
+  geom_vline(xintercept = 221) +
+  scale_fill_manual(values =get_wants_hue(79)) +
+  scale_y_continuous(label=comma) +
+  labs(title = "Top Cycles, C, P and N", x = "Day", y = "Counts", fill = "mRNA Annotation") +
+  #scale_x_continuous(breaks=c(209, 213, 217, 219, 222, 225, 230)) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust=1))
+
+
+ temp <- Merged_TOP_phyloseq_df %>%
+  filter(Level1 == "CAZy") %>%
+  filter(Abundance != 0) %>%
+   group_by(Level3, Level2, TYPE, SITE, DAYOFYEAR) %>%
+   summarise(SUM = sum(Abundance))
+   
+  temp %>%
+  filter(Level3 != "GlycosylTransferases") %>%
+    filter(SUM > 500) %>%
+  ggplot() +
+  geom_point(aes(x = DAYOFYEAR, y = SUM, color = Level2)) + # Adds scatter plot points
+  facet_grid(TYPE~ SITE, scales = "free") + # Facets by SITE
+  theme_Publication() + # Uses a minimal theme
+  labs(x = "Day", y = "Abundance", title = "CAZy :: Glycosyl Transferases ") +
+  theme(axis.text.x = element_text(angle = 45, hjust=1)) +
+  scale_color_manual(values = get_wants_hue(125))
+ 
+
+
+
+
+```
+
+
+
+```{r}
+
+ALLSTOIC_mRNA_siteMD_no_site6_df %>%
+  ggplot(aes(x= as.factor(DAYOFYEAR), y=Abundance, fill = Level1)) + 
+  geom_bar(position = "fill", stat = 'identity') +
+  facet_grid(SITE~TYPE) +
+  geom_vline(xintercept = 221) +
+  scale_fill_manual(values =get_wants_hue(7)) +
+  scale_y_continuous(label=comma) +
+  labs(title = "ALL mRNA, ALL STOIC", x = "Day", y = "Reads", fill = "mRNA Annotation") +
+  #scale_x_continuous(breaks=c(209, 213, 217, 219, 222, 225, 230)) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust=1))
+
+#### Average the mRNA counts by site ###
+
+#Have to break up the summarise, otherwise it will summarise with the number of the level1 entries as the denominator and not the five sites.
+input <- ALLSTOIC_mRNA_siteMD_no_site6_df %>%
+  select(-OTU, - Sample, -NAME) %>%
+  filter(!(FULLNAME %in% c("0807ICE1","0807ICE2","0807ICE3","0807ICE4","0807ICE5","0810ICE1",
+                           "0810ICE2","0810ICE3",
+                           "0810ICE4","0801ICE1", "0810ICE5",
+                           "0805CC1","0810CC1","0810CC5")))
+
+mRNA_ALLSTOIC_phyloseq_AVGdf <- input %>%
+  group_by(TYPE,DAYOFYEAR,SITE,Level1) %>%
+  summarise(Sum = sum(Abundance))
+
+mRNA_ALLSTOIC_phyloseq_AVGdf2 <- mRNA_ALLSTOIC_phyloseq_AVGdf %>%
+  group_by(TYPE,DAYOFYEAR,Level1) %>%
+  summarise(AVG = mean(Sum),
+            Sd = sd(Sum))
+
+mRNA_ALLSTOIC_phyloseq_AVGdf2floored <- mRNA_ALLSTOIC_phyloseq_AVGdf2 %>%
+  mutate(upper_limit = AVG + Sd,
+         lower_limit = ifelse(AVG - Sd < 0, 0, AVG - Sd))
+
+
+mRNA_ALLSTOIC_phyloseq_AVGdf2floored2 <- mRNA_ALLSTOIC_phyloseq_AVGdf2floored %>%
+  mutate(WrittenDate = case_when(
+    DAYOFYEAR == "209" ~ "28 July",
+    DAYOFYEAR == "213" ~ "01 Aug", 
+    DAYOFYEAR == "217" ~ "05 Aug",
+    DAYOFYEAR == "219" ~ "07 Aug", 
+    DAYOFYEAR == "222" ~ "10 Aug", 
+    DAYOFYEAR == "225" ~ "13 Aug", 
+    DAYOFYEAR == "230" ~ "18 Aug"))
+
+mRNA_ALLSTOIC_phyloseq_AVGdf2floored2$WrittenDate <- 
+  factor(mRNA_ALLSTOIC_phyloseq_AVGdf2floored2$WrittenDate, levels = c("28 July",
+    "01 Aug", 
+    "05 Aug",
+    "07 Aug", 
+    "10 Aug", 
+    "13 Aug", 
+    "18 Aug"))
+
+mRNA_ALLSTOIC_phyloseq_AVGdf2floored2 %>%
+  ggplot(aes(x= as.factor(DAYOFYEAR), y=AVG, fill = Level1)) + 
+  geom_bar(position="fill" , stat = "identity") +
+  #geom_errorbar(aes(ymin = lower_limit, ymax = upper_limit), 
+   #             width = 0.25, position = position_dodge(width = 0.9)) +
+  facet_grid(TYPE~WrittenDate, scales='free') +
+  #geom_vline(xintercept = 221) +
+  scale_fill_manual(values =get_wants_hue(7)) +
+  #scale_y_continuous(label=comma, trans='log10') +
+  labs(title = "ALL mRNA, Averaged by Site, 70 samples", x = "Day", y = "Reads", fill = "mRNA Annotation") +
+  theme_bw() 
+```
+
+
+# Statistical Analyses
+
+## Perform an ordination using Nonmetric Multidimensional Scaling
+
+Now, we ordinate using the NMDS method and bray distance. NMDS performs a Non-metric MultiDimenstional Scaling of a sample-wise ecological distance matrix onto a user-specified number of axes, k (in this case 2).
+https://jonlefcheck.net/2012/10/24/nmds-tutorial-in-r/
+
+```{r}
+#| label: fig-NMDS
+#| message: false
+
+# Load necessary libraries
+library(phyloseq)
+library(ggplot2)
+
+set.seed(1000)
+
+# Function to perform NMDS and plot
+plot_phyloseq_nmds <- function(phyloseq_obj, phyloseq_name, color_var) {
+  # Perform NMDS ordination
+  physeq_nmds <- ordinate(phyloseq_obj, method = "NMDS", distance = "bray", trymax=100)
+  
+  # Extract the stress value
+  stress_value <- physeq_nmds$stress
+
+  # Extract the sample data to check the type of color_var
+  sample_data_df <- as.data.frame(sample_data(phyloseq_obj))
+  
+  # Convert numeric columns to factors if necessary
+  if (is.numeric(sample_data_df[[color_var]])) {
+    sample_data(phyloseq_obj)[[color_var]] <- as.factor(sample_data_df[[color_var]])
+  }
+
+  # Create NMDS plot
+  plot_title = paste("NMDS, bray-curtis dissimilarity", phyloseq_name, "colored by", color_var, "\nStress =", round(stress_value, 4))
+  p <- plot_ordination(phyloseq_obj, physeq_nmds, color = color_var, shape = "NAME", title = plot_title) +
+    geom_point(size=3) +
+    scale_color_manual(values=get_wants_hue(8)) +
+    theme(legend.title = element_blank()) +
+    theme(strip.background = element_rect(fill="white")) +
+    theme_bw()
+  
+  # Print stress value to console
+  cat("Stress value for", phyloseq_name, "colored by", color_var, ":", stress_value, "\n")
+  
+  # Return the plot
+  return(p)
+}
+
+# List of phyloseq objects
+phyloseq_objects <- list(
+  PHY_ice_rRNA_siteMD,
+  PHY_cc_rRNA_siteMD,
+  CC_rarefy,
+  ICE_rarefy
+)
+
+# Names of the phyloseq objects
+phyloseq_names <- c(
+  "PHY_ice_rRNA_siteMD",
+  "PHY_cc_rRNA_siteMD",
+  "CC_rarefy",
+  "ICE_rarefy")
+#,
+  "Prok_ALLSTOIC_phy",
+  "Euk_ALLSTOIC_phy",
+  "Protist_ALLSTOIC_phy"
+)
+
+# List of color variables
+color_vars <- c("libraryprep", "DAYOFYEAR", "RUN", "STORAGE", "SITE")
+
+# Apply function to each phyloseq object and color variable, and save the plots to separate PDFs
+for (color_var in color_vars) {
+  for (i in seq_along(phyloseq_objects)) {
+    phyloseq_name <- phyloseq_names[i]
+    filename <- paste0("NMDS_", phyloseq_name, "_", color_var, ".pdf")
+    pdf(filename, width = 6, height = 5)
+    p <- plot_phyloseq_nmds(phyloseq_objects[[i]], phyloseq_name, color_var)
+    print(p)
+    dev.off()
+  }
+}
+
+
+
+```
+https://openplantpathology.github.io/hagis/articles/betadiversity.html
+```{r}
+
+# Load necessary library
+library(phyloseq)
+library(vegan)
+
+# Function to test beta dispersion
+test_phyloseq_betadispersion <- function(phyloseq_obj, phyloseq_name, group_var) {
+  # Extract the sample data
+  sample_data_df <- as.data.frame(sample_data(phyloseq_obj))
+  
+  # Ensure the grouping variable is a factor
+  if (!is.factor(sample_data_df[[group_var]])) {
+    sample_data(phyloseq_obj)[[group_var]] <- as.factor(sample_data_df[[group_var]])
+  }
+  
+  # Calculate Bray-Curtis dissimilarities
+  distance_matrix <- phyloseq::distance(phyloseq_obj, method = "bray")
+  
+  # Test for homogeneity of group dispersions
+  betadisp_result <- betadisper(distance_matrix, sample_data(phyloseq_obj)[[group_var]])
+  
+  # Perform an analysis of variance
+  anova_result <- anova(betadisp_result)
+  
+  # Print results
+  cat("\nBeta dispersion results for", phyloseq_name, "grouped by", group_var, ":\n")
+  print(anova_result)
+  
+  # Return the betadispersion object for further inspection if needed
+  return(betadisp_result)
+}
+
+# List of phyloseq objects
+phyloseq_objects <- list(
+  PHY_ice_rRNA_siteMD,
+  PHY_cc_rRNA_siteMD,
+  CC_rarefy,
+  ICE_rarefy
+)
+
+# Names of the phyloseq objects
+phyloseq_names <- c(
+  "PHY_ice_rRNA_siteMD",
+  "PHY_cc_rRNA_siteMD",
+  "CC_rarefy",
+  "ICE_rarefy"
+)
+
+# List of group variables
+group_vars <- c("libraryprep", "DAYOFYEAR", "RUN", "STORAGE", "SITE")
+
+# Apply function to each phyloseq object and group variable
+for (group_var in group_vars) {
+  for (i in seq_along(phyloseq_objects)) {
+    phyloseq_name <- phyloseq_names[i]
+    betadisp_result <- test_phyloseq_betadispersion(phyloseq_objects[[i]], phyloseq_name, group_var)
+  }
+}
+
+
+
+```
+
+
+###Performs and outputs the PERMANOVA for all phyloseq objs
+```{r}
+# Load necessary library
+library(phyloseq)
+library(vegan)
+
+# Function to perform PERMANOVA
+perform_permanova <- function(phyloseq_obj, phyloseq_name, group_var) {
+  # Extract the sample data as a data frame
+  sample_data_df <- as(sample_data(phyloseq_obj), "data.frame")
+  
+  # Ensure the grouping variable is a factor
+  if (!is.factor(sample_data_df[[group_var]])) {
+    sample_data_df[[group_var]] <- as.factor(sample_data_df[[group_var]])
+  }
+  
+  # Calculate Bray-Curtis dissimilarities
+  distance_matrix <- phyloseq::distance(phyloseq_obj, method = "bray")
+  
+  # Perform PERMANOVA
+  formula <- as.formula(paste("distance_matrix ~", group_var))
+  permanova_result <- adonis2(formula, data = sample_data_df, permutations = 999)
+  
+  # Print results
+  cat("\nPERMANOVA results for", phyloseq_name, "grouped by", group_var, ":\n")
+  print(permanova_result)
+  
+  # Return the PERMANOVA result for further inspection if needed
+  return(permanova_result)
+}
+
+# List of phyloseq objects
+phyloseq_objects <- list(
+  PHY_ice_rRNA_siteMD,
+  PHY_cc_rRNA_siteMD,
+  CC_rarefy,
+  ICE_rarefy
+)
+
+# Names of the phyloseq objects
+phyloseq_names <- c(
+  "PHY_ice_rRNA_siteMD",
+  "PHY_cc_rRNA_siteMD",
+  "CC_rarefy",
+  "ICE_rarefy"
+)
+
+# List of group variables
+group_vars <- c("libraryprep", "DAYOFYEAR", "RUN", "STORAGE", "SITE")
+
+# Apply function to each phyloseq object and group variable
+for (group_var in group_vars) {
+  for (i in seq_along(phyloseq_objects)) {
+    phyloseq_name <- phyloseq_names[i]
+    perform_permanova(phyloseq_objects[[i]], phyloseq_name, group_var)
+  }
+}
+
+
+```
+
+
+```{r}
+##Adding post hoc pairwise comparisons
+
+#install.packages("devtools")
+#devtools::install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
+library(pairwiseAdonis)
+
+# Load necessary libraries
+library(phyloseq)
+library(vegan)
+library(pairwiseAdonis)
+
+# Function to test beta dispersion and perform post-hoc pairwise comparisons
+test_phyloseq_betadispersion <- function(phyloseq_obj, phyloseq_name, group_var) {
+  # Extract the sample data
+  sample_data_df <- as.data.frame(sample_data(phyloseq_obj))
+  
+  # Ensure the grouping variable is a factor
+  if (!is.factor(sample_data_df[[group_var]])) {
+    sample_data(phyloseq_obj)[[group_var]] <- as.factor(sample_data_df[[group_var]])
+  }
+  
+  # Calculate Bray-Curtis dissimilarities
+  distance_matrix <- phyloseq::distance(phyloseq_obj, method = "bray")
+  
+  # Test for homogeneity of group dispersions
+  betadisp_result <- betadisper(distance_matrix, sample_data(phyloseq_obj)[[group_var]])
+  
+  # Perform an analysis of variance
+  anova_result <- anova(betadisp_result)
+  
+  # Print results
+  cat("\nBeta dispersion results for", phyloseq_name, "grouped by", group_var, ":\n")
+  print(anova_result)
+  
+  #Make the Pr(>F) value an item
+  Value <- anova_result$`Pr(>F)`
+  
+  # Check for NA values and perform post-hoc pairwise comparisons if ANOVA is significant
+  if (!is.na(Value[1]) && Value[1] < 0.05) {
+    pairwise_results <- pairwise.adonis(distance_matrix, sample_data(phyloseq_obj)[[group_var]], p.adjust.m = "bonferroni")
+    cat("\nPost-hoc pairwise comparisons for", phyloseq_name, "grouped by", group_var, ":\n")
+    print(pairwise_results)
+  } else {
+    cat("\nNo significant differences found in beta dispersion for", phyloseq_name, "grouped by", group_var, "\n")
+  }
+  
+  # Return the betadispersion object for further inspection if needed
+  return(betadisp_result)
+}
+
+# List of phyloseq objects
+phyloseq_objects <- list(
+  AC_PHY_ice_rRNA_siteMD,
+  AC_PHY_cc_rRNA_siteMD,
+  CC_rarefy,
+  ICE_rarefy
+)
+
+# Names of the phyloseq objects
+phyloseq_names <- c(
+  "AC_PHY_ice_rRNA_siteMD",
+  "AC_PHY_cc_rRNA_siteMD",
+  "CC_rarefy",
+  "ICE_rarefy"
+)
+
+# List of group variables
+group_vars <- c("libraryprep", "DAYOFYEAR", "RUN", "STORAGE", "SITE")
+
+# Apply function to each phyloseq object and group variable
+for (group_var in group_vars) {
+  for (i in seq_along(phyloseq_objects)) {
+    phyloseq_name <- phyloseq_names[i]
+    betadisp_result <- test_phyloseq_betadispersion(phyloseq_objects[[i]], phyloseq_name, group_var)
+  }
+}
+
+
+```
+
+
+
+
+
+
+
+##PERMANOVA ; 
+#multivariate extension of ANOVA. Based on the distances between samples. The test compares distances of samples withing the same group to distances of samples from a different group(s). Is the distance between #samples from the different groups is much larger than samples from the same group, we conclude that the groups are not equal.
+#To test the significance of the results, a permutation test is used. All the samples are randomly mixed over the groups and the test is repeated many times. If the ratio (between group distance/within group #distance) is much larger for the original data than for the permutations, we conclude there is a significant difference. 
+```{r}
+
+
+ICE_rarefy_df <- psmelt(ICE_rarefy)
+CC_rare_df <- psmelt(CC_rarefy)
+
+
+write.csv((ICE_rarefy_df), "ice_rarefy_df.csv", row.names = FALSE)
+write.csv((CC_rare_df), "cc_rarefy_df.csv", row.names = FALSE)
+
+
+```
+
+
+```{r}
+# Load necessary libraries
+library(phyloseq)
+library(vegan)
+set.seed(1000)
+
+# 1. Run PERMANOVA for a single variable
+perform_permanova <- function(phyloseq_obj, variable) {
+  # Extract sample data as a data frame
+  sample_data_df <- as(sample_data(phyloseq_obj), "data.frame")
+  
+  # Ensure the grouping variable is a factor
+  if (!is.factor(sample_data_df[[variable]])) {
+    sample_data_df[[variable]] <- as.factor(sample_data_df[[variable]])
+  }
+  
+  # Calculate Bray-Curtis dissimilarities
+  distance_matrix <- phyloseq::distance(phyloseq_obj, method = "bray")
+  
+  # Perform PERMANOVA
+  formula <- as.formula(paste("distance_matrix ~", variable))
+  permanova_result <- adonis2(formula, data = sample_data_df, permutations = 999)
+  
+  return(permanova_result)
+}
+
+# 2. Run beta dispersion and ANOVA for a single variable
+perform_betadispersion <- function(phyloseq_obj, variable) {
+  # Extract sample data as a data frame
+  sample_data_df <- as.data.frame(sample_data(phyloseq_obj))
+  
+  # Ensure the grouping variable is a factor
+  if (!is.factor(sample_data_df[[variable]])) {
+    sample_data_df[[variable]] <- as.factor(sample_data_df[[variable]])
+  }
+  
+  # Calculate Bray-Curtis dissimilarities
+  distance_matrix <- phyloseq::distance(phyloseq_obj, method = "bray")
+  
+  # Perform beta dispersion analysis
+  betadisp_result <- betadisper(distance_matrix, sample_data_df[[variable]])
+  
+  # Perform ANOVA on beta dispersion results
+  anova_result <- anova(betadisp_result)
+  
+  return(anova_result)
+}
+
+# 3. Define the list of phyloseq objects and types
+phyloseq_objects <- list(ICE_rarefy = ICE_rarefy,
+                         CC_rarefy = CC_rarefy)
+#
+ # Prok_ALLSTOIC_phy = Prok_ALLSTOIC_phy,
+ # Euk_ALLSTOIC_phy = Euk_ALLSTOIC_phy,
+#  Protist_ALLSTOIC_phy = Protist_ALLSTOIC_phy
+#)
+types <- c("ice", "cryoconite")
+
+# 4. Initialize an empty list to store results
+results_list <- list()
+
+# 5. Loop over each phyloseq object and type
+for (phyloseq_name in names(phyloseq_objects)) {
+  for (subset_type in types) {
+    
+    # Subset the phyloseq object based on TYPE (ice or cryoconite)
+    phyloseq_obj <- subset_samples(phyloseq_objects[[phyloseq_name]], TYPE == subset_type)
+    
+    # Run PERMANOVA for SITE
+    permanova_result_site <- perform_permanova(phyloseq_obj, "SITE")
+    
+    # Run beta dispersion and ANOVA for SITE
+    betadispersion_results_site <- perform_betadispersion(phyloseq_obj, "SITE")
+    
+    # Run PERMANOVA for DAYOFYEAR
+    permanova_result_dayofyear <- perform_permanova(phyloseq_obj, "DAYOFYEAR")
+    
+    # Run beta dispersion and ANOVA for DAYOFYEAR
+    betadispersion_results_dayofyear <- perform_betadispersion(phyloseq_obj, "DAYOFYEAR")
+    
+    # Store the results in the list
+    results_list[[paste(phyloseq_name, subset_type, sep = "_")]] <- list(
+      PERMANOVA_SITE = permanova_result_site,
+      Betadispersion_SITE = betadispersion_results_site,
+      PERMANOVA_DAYOFYEAR = permanova_result_dayofyear,
+      Betadispersion_DAYOFYEAR = betadispersion_results_dayofyear
+    )
+  }
+}
+
+# 6. Display the results in an easily readable format
+for (result_name in names(results_list)) {
+  cat("\n\n### Results for:", result_name, "###\n")
+  
+  # Print PERMANOVA results for SITE
+  cat("\nPERMANOVA results for SITE:\n")
+  print(results_list[[result_name]]$PERMANOVA_SITE)
+  
+  # Print Beta Dispersion and ANOVA results for SITE
+  cat("\nBeta Dispersion ANOVA results for SITE:\n")
+  print(results_list[[result_name]]$Betadispersion_SITE)
+  
+  # Print PERMANOVA results for DAYOFYEAR
+  cat("\nPERMANOVA results for DAYOFYEAR:\n")
+  print(results_list[[result_name]]$PERMANOVA_DAYOFYEAR)
+  
+  # Print Beta Dispersion and ANOVA results for DAYOFYEAR
+  cat("\nBeta Dispersion ANOVA results for DAYOFYEAR:\n")
+  print(results_list[[result_name]]$Betadispersion_DAYOFYEAR)
+}
+
+```
+##NMDS of the Prokaryotic, Eukaryotic and Protist communities
+```{r}
+# Function to perform NMDS and plot for ice or cryoconite
+#Pick one phyloseq obj
+#Prok_ALLSTOIC_phy,
+#Euk_ALLSTOIC_phy,
+#Protist_ALLSTOIC_phy
+
+# Define your phyloseq object and subset type
+phyloseq_obj <- Protist_ALLSTOIC_phy  # Change this to any of your phyloseq objects
+subset_type <- 'cryoconite'              # Choose between 'ice' or 'cryoconite'
+phyloseq_name <- "Protist_ALLSTOIC_phy"  # Name of the phyloseq object for plot title and console output
+
+# Subset the phyloseq object based on TYPE (ice or cryoconite)
+phyloseq_subset <- subset_samples(phyloseq_obj, TYPE == subset_type)
+
+# Perform NMDS ordination
+physeq_nmds <- ordinate(phyloseq_subset, method = "NMDS", distance = "bray", trymax = 100)
+
+# Extract the stress value
+stress_value <- physeq_nmds$stress
+
+# Convert SITE to factor if it is not already
+sample_data_df <- as.data.frame(sample_data(phyloseq_subset))
+if (!is.factor(sample_data_df$SITE)) {
+  sample_data(phyloseq_subset)$SITE <- as.factor(sample_data_df$SITE)
+}
+
+# Plot title including stress value
+plot_title <- paste("NMDS, Bray-Curtis Dissimilarity -", subset_type, phyloseq_name, "colored by DAYOFYEAR\nStress =", round(stress_value, 4))
+
+# Generate the NMDS plot
+p <- plot_ordination(phyloseq_subset, physeq_nmds, color = "DAYOFYEAR", shape = "SITE", title = plot_title) +
+  geom_point(size = 3) +
+  theme_bw() +
+  theme(legend.title = element_blank(),
+        strip.background = element_rect(fill = "white"),
+        plot.title = element_text(hjust = 0.5)) +
+  scale_color_manual(values=get_wants_hue(8)) 
+
+# Print stress value to console
+cat("Stress value for", phyloseq_name, "-", subset_type, "colored by DAYOFYEAR:", stress_value, "\n")
+
+# Display the plot
+print(p)
+
+
+```
+
+
+
+### Below is the unknown
+
+
+
+Now layer:
+
+```{r}
+permanova_layer <- adonis2(
+  t(otu_microbiome)~DAYOFYEAR,
+  data = meta_microbiome,
+  permutations=999, method = "bray"
+  )
+permanova_layer
+```
+
+If you have several "models", consider a more general approach using lists:
+
+```{r}
+adonis2_formulas <- list(
+  layer = t(otu_microbiome)~SITE,
+  depth = t(otu_microbiome)~DAYOFYEAR
+)
+permanovas <- adonis2_formulas |>
+  map(
+    adonis2, data = meta_microbiome,
+    permutations=999, method = "bray"
+    )
+permanovas
+#permanovas$layer
+```
+
+## Multivariate homogeneity of groups dispersions
+
+```{r}
+# Calculate distance
+dist <- vegan::vegdist(t(otu_microbiome), method="bray")
+# betadisper is a multivariate analogue of Levene's test for homogeneity of variances
+mod_layer <- vegan::betadisper(
+  dist, meta_microbiome$SITE, type="centroid"
+  )
+mod_layer$layer <- meta_microbiome$layer
+```
+
+## TukeyHSD
+
+```{r}
+(tukey_test <- TukeyHSD(mod_layer))
+```
+
+```{r}
+plot(tukey_test)
+```
+
+## PCoA with variance in axis
+
+```{r}
+get_variance <- function(mod, number, digits = 2){
+  variance <- mod$eig[number]/sum(mod$eig)*100
+  variance |>
+    round(digits) |> 
+    format(nsmall = digits)
+}
+x_label <- paste0('PCoA 1 (', get_variance(mod_layer, 1),'%)')
+y_label <- paste0('PCoA 2 (', get_variance(mod_layer, 2),'%)')
+
+par(mfrow = c(1,2))
+plot(
+  mod_layer,  hull=FALSE, ellipse=TRUE,
+  main = "PCoA, layer", sub=NULL,
+  col=c("#2f85fe", "#e05436", "#009453"),
+  cex=2, lwd=1,
+  xlab = x_label,
+  ylab = y_label
+  ) #+
+```
+
+## Boxplot of distances with pvalues from Tukey Test
+
+We can add p-values from to the box plot of the distances:
+
+```{r}
+
+get_pos_whisker <- function(x){
+  # Calculate whisker position
+  hinge <- as.numeric(quantile(x, probs = 0.75))
+  upper_max <- hinge +IQR(x)*1.5 
+  x |> 
+    keep(~ . < upper_max) |>
+    max()
+}
+# Calculate label position
+pos <-  c(
+  by(mod_layer$distances, mod_layer$group, get_pos_whisker)
+  )
+
+# You can run the next line for calculating automatically the
+# labels based in p-values.
+tukey_label <-   data.frame(
+    label = rownames(tukey_test$group)[which(
+      tukey_test$group[,'p adj']< 0.05
+      )]
+  ) |>
+  separate(label,sep = '-', into = c('from', 'to'),remove = T) %$%
+  data.frame(from = c(from, to), to = c(to, from)) |>
+  group_by(from)|>
+  summarise(label = paste0(to, collapse = ','))|>
+  column_to_rownames('from')|>
+  pull(label)
+
+# However, for this data, there is no significance difference 
+# between groups. We can still plot those labels as example:
+
+custom_label <- c('A', 'V', 'AV', 'T2')
+
+tibble(
+  distances = mod_layer$distances,
+  group = mod_layer$group,
+) |>
+  ggplot(aes(x = group, y = distances, fill = group))+
+  geom_boxplot()+
+  geom_text(
+    data = data.frame(
+      distances = pos,group = names(pos),label = custom_label
+      ),
+    aes(label = label),
+    hjust = -1, vjust = -0.5
+    )+
+  xlab('Layer')+ylab('Distance to Centroid')+
+  theme(
+    legend.position = 'None'
+  )
+
+
+
+```
+
+## Some ice binding protien investigation
+
+```{r}
+IBP_counts_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional/generic_matches_IBP_annotated.csv"
+
+IBP_names_CSV <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional/generic_matches_IBP_annotated_NAMES.csv"
+
+
+HF_IBP_CSV_count <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/HF_IBP_counts.csv"
+
+HF_IBP_CSV_names <- "/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/SNAKEMAKE/ICE/diamond_functional_summed/HF_IBP_name.csv"
+
+#!#!#
+
+ICP_metadata <- read_csv("/Users/au706677/Documents/AU/DeepPurple/Cryobio/STOIC/data/STOICice_BIG_METADATA.csv" )
+
+ICP_counts <- read_csv(IBP_counts_CSV) |>
+  phyloseq::otu_table(taxa_are_rows = TRUE)
+
+ICP_names <- readr::read_delim(IBP_names_CSV, delim = ";") |>
+  as.matrix() |>
+  phyloseq::tax_table()
+
+ICP_MD <- ICP_metadata %>%
+  tibble::column_to_rownames(var = "SEQUENCEFILE")|>
+  phyloseq::sample_data()
+
+
+#Phyloseq obj
+ICP_phyloseq <- phyloseq(ICP_counts, ICP_names, ICP_MD)
+
+ICP_phyloseq 
+
+
+ICP_phyloseq_df <- psmelt(ICP_phyloseq) %>%
+  filter(SITE != 6)
+
+
+
+```
+
+```{r}
+#install.packages("microeco")
+library(microeco)
+
+
+new1_meco$cal_betadiv()
+t1 <- trans_beta$new(dataset = new1_meco, group = "Description", measure = "bray")
+t1 <- trans_beta$new(dataset = new1_meco, group = "Type", measure = "bray")
+# use PCoA as an example, PCA or NMDS is also available
+t1$cal_ordination(ordination = "PCoA")
+t1$cal_ordination(ordination = "NMDS")
+# plot the PCoA result with confidence ellipse
+
+#colours for sites
+paired1 <- c("#A6CEE3","#B15928","grey35","#CAB2D6","#1F78B4","#6A3D9A","#FDBF6F","#e6f598","#33A02C","#A1D76A","#FF7F00","#FB9A99","#E31A1C","#d53e4f","#E9A3C9","grey88","#7BCCC4","#fee08b")
+
+
+#colours for 18s, ITS2 & ITSL 
+paired1 <- c("#A6CEE3","#B15928","grey35","#CAB2D6","#1F78B4","#6A3D9A","#FDBF6F","#e6f598","#33A02C","#A1D76A","#FF7F00","darkcyan","#FB9A99","#E31A1C","#d53e4f","#E9A3C9","grey88","#7BCCC4","#fee08b")
+
+
+t1$plot_ordination(plot_color = "Description", plot_shape = "Type", plot_type = c("point","ellipse"),color_values = paired1)+theme_bw()+scale_shape_manual(values=c(15,16,17,18,11,10,12))+geom_point(size=4)+theme(legend.key.size = unit(0.5, 'cm'),legend.text = element_text(size=8))
+t1$plot_ordination(plot_color = "Type", plot_shape = "Type", plot_type = c("point","ellipse"),color_values = paired1)+theme_bw()+scale_shape_manual(values=c(15,16,17,18,11,10))+geom_point(size=4)+theme(legend.key.size = unit(0.5, 'cm'),legend.text = element_text(size=8))
+
+
+```
+
+
+```{r}
+
+ICP_df_1 <- ICP_phyloseq_df %>%
+  group_by(Sample) %>%
+  mutate(IBPSum = sum(Abundance)) %>%
+  #select(-Hits, -OTU, -Abundance) %>%
+  distinct()
+
+#Flow cytometer counts only by the cells larger than 10um
+ICP_df_2 <- ICP_df_1 %>%
+  group_by(Sample) %>%
+  mutate(Flowcyt_AlgalCells = (Fixed_H + Fixed_I + Fixed_J))
+
+ICP_df_3 <- ICP_df_2 %>%
+  group_by(Sample) %>%
+  mutate(FlowCytRatio = IBPSum/Flowcyt_AlgalCells)
+
+#Just plot with the infield cell counts
+# The `Infield` df is from STOICCOUNTS.R
+
+ICP_Infield_df <- left_join(ICP_df_3, Infield, by = "FULLNAME")
+
+
+ICP_Infield_df2 <- ICP_Infield_df %>%
+  select( -date, -ME, -DAYOFYEAR.y, -SITE.y)
+
+
+ICP_Infield_df3 <- ICP_Infield_df2 %>%
+  mutate(InfieldRatio = IBPSum/(totalicealgae))
+
+library(ggridges)
+
+ICP_phyloseq_dotplot <- ICP_Infield_df3  %>%
+  #filter_all(all_vars(!is.infinite(.))) %>%
+  ggplot(aes(x= as.factor(DAYOFYEAR.x), y=InfieldRatio, color = as.factor(SITE.x), group = as.factor(SITE.x))) + 
+  geom_point(size = 3) +
+  geom_density_line(stat = "identity", alpha=0.3) +
+  #scale_y_continuous(label=comma, expand = c(.15, .15)) +
+  #facet_wrap(~SITE, scale = "free_y", ncol = 1, strip.position = "right") +
+  labs(
+       x = "Day of Year", y = "Expressed IBP/Algal cell", color = "Site") +
+  scale_color_manual(values = c("1"="lightblue", "2"="indianred3", "3"="tan1", "4"="yellowgreen", "5"="purple2")) +
+  scale_x_discrete(breaks=c(209, 213, 217, 219, 222, 222, 225, 230)) +
+  theme_Publication() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust=1))
+
+ICP_phyloseq_dotplot
+
+
+# Install necessary package for post-hoc test
+install.packages("multcomp")
+library(multcomp)
+
+# Your data (make sure to replace this with your actual data)
+data <- ICP_Infield_df3
+data$DAYOFYEAR.x <- as.factor(data$DAYOFYEAR.x)
+
+
+# Check assumptions
+shapiro.test(data$InfieldRatio) # For normality
+# For homogeneity of variance:
+if ("car" %in% rownames(installed.packages()) == FALSE) {install.packages("car")}
+library(car)
+leveneTest(InfieldRatio ~ DAYOFYEAR.x, data=data)
+
+# ANOVA test
+anova_result <- aov(InfieldRatio ~ as.factor(DAYOFYEAR.x), data=data)
+anova_summary <- summary(anova_result)
+
+# If you want to programmatically check if any of the main effects are significant:
+library(multcomp)
+  
+# Perform Tukey's HSD test
+tukey_result <- glht(anova_result, linfct = mcp(DAYOFYEAR.x == "Tukey"))
+print(summary(tukey_result))
+
+
+kruskal.test(leveneTest(InfieldRatio ~ DAYOFYEAR.x, data=data))
+
+```
+
+
+
+## And rRNA counts of the algae
+
+```{r}
+
+IceAlgaerRNAsummarize <-  subset(ALLSTOIC_rRNA_siteMD_no_site6_df, phylum == " Streptophyta" )
+
+IceAlgaerRNAsummarize_2 <- IceAlgaerRNAsummarize %>%
+  group_by(Sample) %>%
+  summarise(StreptophytarRNA = sum(Abundance))
+
+IceAlgaerRNAsummarize_3 <- merge(IceAlgaerRNAsummarize, IceAlgaerRNAsummarize_2, by = "Sample") %>%
+  filter(TYPE == "ice") %>%
+  distinct() %>%
+  select(-DATE, -OTU)
+
+
+ICP_withallcountypes <- left_join(ICP_Infield_df_2, IceAlgaerRNAsummarize_2, by = "Sample")
+
+ICP_withallcountypes_2 <- ICP_withallcountypes %>%
+  select("FULLNAME","Sample", "TYPE", "DAY", "albedo_gapless", "FvFm", "TotalFixedFlowEvents",
+"TotalFixedCells", "Sum", "AlgalCells", "FlowCytRatio", "totalicealgae",  "InfieldRatio","DAYOFYEAR.x", "SITE.x", "StreptophytarRNA"  ) %>%
+  mutate(rnaRatio = Sum/(StreptophytarRNA/2000000)) 
+
+
+ICP_withallcountypes_3 <- ICP_withallcountypes_2 %>%
+  pivot_longer(cols = c("StreptophytarRNA","FlowCytRatio", "InfieldRatio" ),
+               names_to = "count_types",
+               values_to = "ICP_RATIOS")
+
+
+ICP_allcounttypes_dotplot <- ICP_withallcountypes_3 %>%
+  filter_all(all_vars(!is.infinite(.))) %>%
+  ggplot(aes(x= DAYOFYEAR.x, y=ICP_RATIOS, group = as.factor(SITE.x), color = as.factor(SITE.x))) +
+  geom_point(aes(shape = count_types, size = 2)) +
+  geom_line() +
+  geom_vline(xintercept = 222, linetype="dotted", 
+             color = "blue") +
+  scale_y_continuous(label=comma) +
+  facet_wrap(~count_types, scale = "free_y", nrow = 3) +
+  #scale_fill_manual(values = get_wants_hue(42)) +
+  labs(title = "Total Ice Binding Proteins Expressed :: Algal cell counts",
+       x = "Day", 
+       y = "Ratio (mRNA IBP of Proteomic Protein/Algal Cell Counts",
+      color = "Site",
+      size = "none",
+       shape = c("Summed Flow Cytometer", "In")) +
+  scale_color_manual(values = c("1"="blue", "2"="indianred3", "3"="tan1", "4"="yellowgreen", "5"="purple2")) +
+  scale_x_continuous(breaks=c(209, 213, 217, 219, 221, 222, 225, 230)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust=1))
+
+ICP_allcounttypes_dotplot
+
+
+
+```
+
+

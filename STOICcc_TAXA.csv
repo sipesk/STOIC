@@ -1,0 +1,527 @@
+kingdom;phylum;class;order;family;genus;species
+k__Amorphea; p__Ascomycota; c__Eurotiomycetes; o__Chaetothyriales; f__; g__; s__
+k__Amorphea; p__Ascomycota; c__Eurotiomycetes; o__Chaetothyriales; f__Herpotrichiellaceae; g__Cladophialophora; s__
+k__Amorphea; p__Ascomycota; c__Eurotiomycetes; o__Chaetothyriales; f__Herpotrichiellaceae; g__Cladophialophora; s__Cladophialophora minutissima
+k__Amorphea; p__Ascomycota; c__Leotiomycetes; o__; f__; g__; s__
+k__Amorphea; p__Ascomycota; c__Leotiomycetes; o__Helotiales; f__; g__; s__
+k__Amorphea; p__Basidiomycota; c__Microbotryomycetes; o__; f__; g__; s__
+k__Amorphea; p__Basidiomycota; c__Microbotryomycetes; o__Kriegeriales; f__Camptobasidiaceae; g__; s__
+k__Amorphea; p__Basidiomycota; c__Microbotryomycetes; o__Kriegeriales; f__Camptobasidiaceae; g__; s__
+k__Amorphea; p__Basidiomycota; c__Microbotryomycetes; o__Leucosporidiales; f__Leucosporidiaceae; g__Leucosporidium; s__
+k__Amorphea; p__Blastocladiomycota; c__Blastocladiomycetes; o__Blastocladiales; f__; g__; s__
+k__Amorphea; p__Blastocladiomycota; c__Blastocladiomycetes; o__Blastocladiales; f__Blastocladiaceae; g__Blastocladiella; s__
+k__Amorphea; p__Choanoflagellida (phylum); c__Choanoflagellatea; o__Craspedida; f__; g__; s__
+k__Amorphea; p__Choanoflagellida (phylum); c__Choanoflagellatea; o__Craspedida; f__Salpingoecidae Group C1; g__Salpingoecidae Group C1 X; s__
+k__Amorphea; p__Chytridiomycota; c__Chytridiomycetes; o__Chytridiales; f__Chytridiaceae; g__; s__
+k__Amorphea; p__Chytridiomycota; c__Chytridiomycetes; o__Chytridiales; f__Chytriomycetaceae; g__Chytriomyces; s__
+k__Amorphea; p__Chytridiomycota; c__Chytridiomycetes; o__Gromochytriales; f__Gromochytriaceae; g__; s__
+k__Amorphea; p__Chytridiomycota; c__Chytridiomycetes; o__Lobulomycetales; f__Lobulomycetaceae; g__; s__
+k__Amorphea; p__Chytridiomycota; c__Chytridiomycetes; o__Lobulomycetales; f__Lobulomycetaceae; g__; s__
+k__Amorphea; p__Chytridiomycota; c__Chytridiomycetes; o__Rhizophydiales; f__; g__; s__
+k__Amorphea; p__Chytridiomycota; c__Chytridiomycetes; o__Rhizophydiales; f__; g__; s__
+k__Amorphea; p__Chytridiomycota; c__Chytridiomycetes; o__Rhizophydiales; f__Rhizophydiaceae; g__; s__
+k__Amorphea; p__Chytridiomycota; c__Chytridiomycetes; o__Rhizophydiales; f__Rhizophydiaceae; g__; s__
+k__Amorphea; p__Chytridiomycota; c__Chytridiomycetes; o__Rhizophydiales; f__Rhizophydiaceae; g__; s__
+k__Amorphea; p__Chytridiomycota; c__Chytridiomycetes; o__Rhizophydiales; f__Rhizophydiaceae; g__; s__
+k__Amorphea; p__Chytridiomycota; c__Chytridiomycetes; o__Rhizophydiales; f__Rhizophydiaceae; g__Rhizophydium; s__
+k__Amorphea; p__Conosa; c__Variosea; o__ATCC50593-Flamella-WIM80-lineage; f__; g__; s__
+k__Amorphea; p__Conosa; c__Variosea; o__ATCC50593-Flamella-WIM80-lineage; f__Flamella-lineage; g__Flamella-lineage X; s__
+k__Amorphea; p__Ichthyosporea; c__Ichthyosphonida; o__Pseudoperkinsidae; f__; g__; s__
+k__Amorphea; p__Lobosa; c__Tubulinea; o__Nolandida; f__; g__; s__
+k__Amorphea; p__Lobosa; c__Tubulinea; o__Nolandida; f__Nolandellidae; g__; s__
+k__Amorphea; p__Lobosa; c__Tubulinea; o__Nolandida; f__Nolandellidae; g__Nolandellidae X; s__
+k__Amorphea; p__Nucleariidea; c__Nucleariida; o__Nucleariida X; f__Nuclearia family incertae sedis; g__Nuclearia; s__
+k__Amorphea; p__Rotifera; c__Bdelloidea (Rotifera); o__Adinetida; f__; g__; s__
+k__Amorphea; p__Rotifera; c__Bdelloidea (Rotifera); o__Adinetida; f__; g__; s__
+k__Amorphea; p__Rotifera; c__Bdelloidea (Rotifera); o__Adinetida; f__Adinetidae; g__Adineta; s__
+k__Amorphea; p__Tardigrada; c__Eutardigrada; o__Parachaela; f__; g__; s__
+k__Amorphea; p__Tardigrada; c__Eutardigrada; o__Parachaela; f__; g__; s__
+k__Amorphea; p__Tardigrada; c__Eutardigrada; o__Parachaela; f__; g__; s__
+k__Amorphea; p__Tardigrada; c__Eutardigrada; o__Parachaela; f__; g__; s__
+k__Amorphea; p__Tardigrada; c__Eutardigrada; o__Parachaela; f__; g__; s__
+k__Archaeplastida; p__Chlorophyta; c__; o__; f__; g__; s__
+k__Archaeplastida; p__Chlorophyta; c__; o__; f__; g__; s__
+k__Archaeplastida; p__Chlorophyta; c__; o__; f__; g__; s__
+k__Archaeplastida; p__Chlorophyta; c__; o__; f__; g__; s__
+k__Archaeplastida; p__Chlorophyta; c__Chlorophyceae; o__Chlamydomonadales; f__; g__; s__
+k__Archaeplastida; p__Chlorophyta; c__Chlorophyceae; o__Chlamydomonadales; f__; g__; s__
+k__Archaeplastida; p__Chlorophyta; c__Chlorophyceae; o__Chlamydomonadales; f__; g__; s__
+k__Archaeplastida; p__Chlorophyta; c__Chlorophyceae; o__Chlamydomonadales; f__; g__; s__
+k__Archaeplastida; p__Chlorophyta; c__Chlorophyceae; o__Chlamydomonadales; f__; g__; s__
+k__Archaeplastida; p__Chlorophyta; c__Chlorophyceae; o__Chlamydomonadales; f__Chlamydomonadales XX; g__; s__
+k__Archaeplastida; p__Chlorophyta; c__Chlorophyceae; o__Chlamydomonadales; f__Chlamydomonadales XX; g__; s__
+k__Archaeplastida; p__Chlorophyta; c__Chlorophyceae; o__Chlamydomonadales; f__Chlamydomonadales XX; g__; s__
+k__Archaeplastida; p__Chlorophyta; c__Chlorophyceae; o__Chlamydomonadales; f__Chlamydomonadales XX; g__; s__
+k__Archaeplastida; p__Chlorophyta; c__Chlorophyceae; o__Chlamydomonadales; f__Chloromonas; g__Chloromonas polyptera genus incertae sedis; s__
+k__Archaeplastida; p__Chlorophyta; c__Mamiellophyceae; o__Monomastigales; f__Monomastigaceae; g__; s__
+k__Archaeplastida; p__Streptophyta; c__Zygnemophyceae; o__Zygnematales; f__; g__; s__
+k__Bacteria (superkingdom); p__; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Abditibacteriota; c__Abditibacteria; o__Abditibacteriales; f__Abditibacteriaceae; g__Abditibacterium; s__
+k__Bacteria (superkingdom); p__Acidobacteriota; c__Acidobacteriae; o__Acidobacteriales; f__Acidobacteriaceae (Subgroup 1); g__; s__
+k__Bacteria (superkingdom); p__Acidobacteriota; c__Acidobacteriae; o__Acidobacteriales; f__Acidobacteriaceae (Subgroup 1); g__; s__
+k__Bacteria (superkingdom); p__Acidobacteriota; c__Acidobacteriae; o__Acidobacteriales; f__Acidobacteriaceae (Subgroup 1); g__; s__
+k__Bacteria (superkingdom); p__Acidobacteriota; c__Acidobacteriae; o__Acidobacteriales; f__Acidobacteriaceae (Subgroup 1); g__; s__
+k__Bacteria (superkingdom); p__Acidobacteriota; c__Acidobacteriae; o__Acidobacteriales; f__Acidobacteriaceae (Subgroup 1); g__; s__
+k__Bacteria (superkingdom); p__Acidobacteriota; c__Acidobacteriae; o__Acidobacteriales; f__Acidobacteriaceae (Subgroup 1); g__; s__
+k__Bacteria (superkingdom); p__Acidobacteriota; c__Acidobacteriae; o__Acidobacteriales; f__Acidobacteriaceae (Subgroup 1); g__; s__
+k__Bacteria (superkingdom); p__Acidobacteriota; c__Acidobacteriae; o__Acidobacteriales; f__Acidobacteriaceae (Subgroup 1); g__; s__
+k__Bacteria (superkingdom); p__Acidobacteriota; c__Acidobacteriae; o__Acidobacteriales; f__Acidobacteriaceae (Subgroup 1); g__; s__
+k__Bacteria (superkingdom); p__Acidobacteriota; c__Acidobacteriae; o__Acidobacteriales; f__Acidobacteriaceae (Subgroup 1); g__Granulicella; s__
+k__Bacteria (superkingdom); p__Acidobacteriota; c__Acidobacteriae; o__Acidobacteriales; f__Acidobacteriaceae (Subgroup 1); g__Granulicella; s__
+k__Bacteria (superkingdom); p__Acidobacteriota; c__Acidobacteriae; o__Acidobacteriales; f__Acidobacteriaceae (Subgroup 1); g__Terriglobus; s__Terriglobus saanensis SP1PR4
+k__Bacteria (superkingdom); p__Acidobacteriota; c__Acidobacteriae; o__Bryobacterales; f__Bryobacteraceae; g__Bryobacter; s__
+k__Bacteria (superkingdom); p__Acidobacteriota; c__Acidobacteriae; o__Solibacterales; f__Solibacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Acidobacteriota; c__Acidobacteriae; o__Solibacterales; f__Solibacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Acidobacteriota; c__Acidobacteriae; o__Solibacterales; f__Solibacteraceae; g__Candidatus Solibacter; s__
+k__Bacteria (superkingdom); p__Acidobacteriota; c__Acidobacteriae; o__Solibacterales; f__Solibacteraceae; g__Candidatus Solibacter; s__
+k__Bacteria (superkingdom); p__Actinobacteriota; c__Acidimicrobiia; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Actinobacteriota; c__Acidimicrobiia; o__Microtrichales; f__Ilumatobacteraceae; g__CL500-29 marine group; s__
+k__Bacteria (superkingdom); p__Actinobacteriota; c__Actinobacteria; o__Corynebacteriales; f__Nocardiaceae; g__; s__
+k__Bacteria (superkingdom); p__Actinobacteriota; c__Actinobacteria; o__Frankiales; f__; g__; s__
+k__Bacteria (superkingdom); p__Actinobacteriota; c__Actinobacteria; o__Frankiales; f__; g__; s__
+k__Bacteria (superkingdom); p__Actinobacteriota; c__Actinobacteria; o__Frankiales; f__Frankiaceae; g__; s__
+k__Bacteria (superkingdom); p__Actinobacteriota; c__Actinobacteria; o__Frankiales; f__Nakamurellaceae; g__; s__
+k__Bacteria (superkingdom); p__Actinobacteriota; c__Actinobacteria; o__Frankiales; f__Nakamurellaceae; g__Nakamurella; s__Nakamurella panacisegetis
+k__Bacteria (superkingdom); p__Actinobacteriota; c__Actinobacteria; o__Frankiales; f__Sporichthyaceae; g__; s__
+k__Bacteria (superkingdom); p__Actinobacteriota; c__Actinobacteria; o__Frankiales; f__Sporichthyaceae; g__; s__
+k__Bacteria (superkingdom); p__Actinobacteriota; c__Actinobacteria; o__Frankiales; f__Sporichthyaceae; g__hgcI clade; s__
+k__Bacteria (superkingdom); p__Actinobacteriota; c__Actinobacteria; o__Frankiales; f__Sporichthyaceae; g__hgcI clade; s__
+k__Bacteria (superkingdom); p__Actinobacteriota; c__Actinobacteria; o__Frankiales; f__Sporichthyaceae; g__hgcI clade; s__
+k__Bacteria (superkingdom); p__Actinobacteriota; c__Actinobacteria; o__Micrococcales; f__Microbacteriaceae; g__; s__
+k__Bacteria (superkingdom); p__Actinobacteriota; c__Actinobacteria; o__Micrococcales; f__Microbacteriaceae; g__; s__
+k__Bacteria (superkingdom); p__Actinobacteriota; c__Actinobacteria; o__Micrococcales; f__Microbacteriaceae; g__Lysinimonas; s__
+k__Bacteria (superkingdom); p__Actinobacteriota; c__Actinobacteria; o__Micrococcales; f__Microbacteriaceae; g__Parafrigoribacterium; s__
+k__Bacteria (superkingdom); p__Actinobacteriota; c__Actinobacteria; o__Micrococcales; f__Microbacteriaceae; g__Parafrigoribacterium; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Armatimonadia; o__Armatimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Chthonomonadetes; o__Chthomonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Chthonomonadetes; o__Chthomonadales; f__Chthonomonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Chthonomonadetes; o__Chthomonadales; f__Chthonomonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Chthonomonadetes; o__Chthomonadales; f__Chthonomonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Chthonomonadetes; o__Chthomonadales; f__Chthonomonadaceae; g__Chthonomonas; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Chthonomonadetes; o__Chthomonadales; f__Chthonomonadaceae; g__Chthonomonas; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Chthonomonadetes; o__Chthomonadales; f__Chthonomonadaceae; g__Chthonomonas; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Chthonomonadetes; o__Chthomonadales; f__Chthonomonadaceae; g__Chthonomonas; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Chthonomonadetes; o__Chthomonadales; f__Chthonomonadaceae; g__Chthonomonas; s__
+k__Bacteria (superkingdom); p__Armatimonadota; c__Chthonomonadetes; o__Chthomonadales; f__Chthonomonadaceae; g__Chthonomonas; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__37-13; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__37-13; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__Edaphobaculum; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__Edaphobaculum; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__Ferruginibacter; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__Ferruginibacter; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__Ferruginibacter; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__Ferruginibacter; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__Ferruginibacter; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__Ferruginibacter; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__Parasediminibacterium; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__Puia; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Saprospiraceae; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Saprospiraceae; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Saprospiraceae; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Saprospiraceae; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Cytophagaceae; g__Cytophaga; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Cytophagaceae; g__Cytophaga; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Cytophagaceae; g__Cytophaga; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Hymenobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Hymenobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Hymenobacteraceae; g__Hymenobacter; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Hymenobacteraceae; g__Hymenobacter; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Hymenobacteraceae; g__Hymenobacter; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Hymenobacteraceae; g__Hymenobacter; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Hymenobacteraceae; g__Hymenobacter; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Hymenobacteraceae; g__Hymenobacter; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Spirosomaceae; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Spirosomaceae; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Spirosomaceae; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Spirosomaceae; g__Arcicella; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Spirosomaceae; g__Flectobacillus; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Flavobacteriales; f__Flavobacteriaceae; g__Flavobacterium; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Flavobacteriales; f__Flavobacteriaceae; g__Flavobacterium; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Sphingobacteriales; f__env.OPS 17; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Sphingobacteriales; f__env.OPS 17; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Sphingobacteriales; f__FFCH9454; g__; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Sphingobacteriales; f__Sphingobacteriaceae; g__Mucilaginibacter; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Sphingobacteriales; f__Sphingobacteriaceae; g__Pedobacter; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Sphingobacteriales; f__Sphingobacteriaceae; g__Solitalea; s__
+k__Bacteria (superkingdom); p__Bacteroidota; c__Bacteroidia; o__Sphingobacteriales; f__Sphingobacteriaceae; g__Solitalea; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Bdellovibrionia; o__Bdellovibrionales; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Bdellovibrionia; o__Bdellovibrionales; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Bdellovibrionia; o__Bdellovibrionales; f__Bdellovibrionaceae; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Bdellovibrionia; o__Bdellovibrionales; f__Bdellovibrionaceae; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Bdellovibrionia; o__Bdellovibrionales; f__Bdellovibrionaceae; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Bdellovibrionia; o__Bdellovibrionales; f__Bdellovibrionaceae; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Bdellovibrionia; o__Bdellovibrionales; f__Bdellovibrionaceae; g__Bdellovibrio; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Bdellovibrionia; o__Bdellovibrionales; f__Bdellovibrionaceae; g__Bdellovibrio; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Bdellovibrionia; o__Bdellovibrionales; f__Bdellovibrionaceae; g__Bdellovibrio; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Bdellovibrionia; o__Bdellovibrionales; f__Bdellovibrionaceae; g__Bdellovibrio; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Bdellovibrionia; o__Bdellovibrionales; f__Bdellovibrionaceae; g__Bdellovibrio; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__Oligoflexales; f__Oligoflexaceae; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__Silvanigrellales; f__Silvanigrellaceae; g__; s__
+k__Bacteria (superkingdom); p__Bdellovibrionota; c__Oligoflexia; o__Silvanigrellales; f__Silvanigrellaceae; g__; s__
+k__Bacteria (superkingdom); p__Berkelbacteria; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Berkelbacteria; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Chloroflexi; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Chloroflexi; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Chloroflexi; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Chloroflexi; c__Anaerolineae; o__SBR1031; f__; g__; s__
+k__Bacteria (superkingdom); p__Chloroflexi; c__Anaerolineae; o__SBR1031; f__; g__; s__
+k__Bacteria (superkingdom); p__Chloroflexi; c__Chloroflexia; o__Thermomicrobiales; f__JG30-KF-CM45; g__; s__
+k__Bacteria (superkingdom); p__Chloroflexi; c__Ktedonobacteria; o__Ktedonobacterales; f__Ktedonobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Chloroflexi; c__Ktedonobacteria; o__Ktedonobacterales; f__Ktedonobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Chloroflexi; c__Ktedonobacteria; o__Ktedonobacterales; f__Ktedonobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Cyanobacteriales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Cyanobacteriales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Cyanobacteriales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Cyanobacteriales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Cyanobacteriales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Cyanobacteriales; f__Nostocaceae; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Cyanobacteriales; f__Nostocaceae; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Cyanobacteriales; f__Nostocaceae; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Cyanobacteriales; f__Nostocaceae; g__Scytonema UTEX 2349; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__Leptolyngbyaceae; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__Leptolyngbyaceae; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__Leptolyngbyaceae; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__Leptolyngbyaceae; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__Leptolyngbyaceae; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__Leptolyngbyaceae; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__Leptolyngbyaceae; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__Leptolyngbyaceae; g__Chamaesiphon PCC-7430; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__Leptolyngbyaceae; g__Chamaesiphon PCC-7430; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Leptolyngbyales; f__Leptolyngbyaceae; g__Phormidesmis ANT.L52.6; s__Phormidesmis priestleyi BC1401
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Pseudanabaenales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Pseudanabaenales; f__Pseudanabaenaceae; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Cyanobacteriia; o__Pseudanabaenales; f__Pseudanabaenaceae; g__Pseudanabaena PCC-7429; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Sericytochromatia; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Sericytochromatia; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Sericytochromatia; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Vampirivibrionia; o__Obscuribacterales; f__; g__; s__
+k__Bacteria (superkingdom); p__Cyanobacteria; c__Vampirivibrionia; o__Obscuribacterales; f__Obscuribacteraceae; g__Candidatus Obscuribacter; s__
+k__Bacteria (superkingdom); p__Deinococcota; c__Deinococci; o__Deinococcales; f__; g__; s__
+k__Bacteria (superkingdom); p__Deinococcota; c__Deinococci; o__Deinococcales; f__Deinococcaceae; g__Deinococcus; s__
+k__Bacteria (superkingdom); p__Deinococcota; c__Deinococci; o__Deinococcales; f__Deinococcaceae; g__Deinococcus; s__
+k__Bacteria (superkingdom); p__Dojkabacteria; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Dojkabacteria; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Dojkabacteria; c__; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Firmicutes; c__Clostridia; o__Clostridiales; f__Clostridiaceae; g__Clostridium sensu stricto 12; s__
+k__Bacteria (superkingdom); p__Firmicutes; c__Clostridia; o__Clostridiales; f__Clostridiaceae; g__Clostridium sensu stricto 9; s__
+k__Bacteria (superkingdom); p__Gemmatimonadota; c__Gemmatimonadetes; o__Gemmatimonadales; f__Gemmatimonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Gemmatimonadota; c__Gemmatimonadetes; o__Gemmatimonadales; f__Gemmatimonadaceae; g__Gemmatimonas; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Myxococcia; o__Myxococcales; f__; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Myxococcia; o__Myxococcales; f__; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Myxococcia; o__Myxococcales; f__Anaeromyxobacteraceae; g__Anaeromyxobacter; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Myxococcia; o__Myxococcales; f__Anaeromyxobacteraceae; g__Anaeromyxobacter; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Myxococcia; o__Myxococcales; f__Anaeromyxobacteraceae; g__Anaeromyxobacter; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Haliangiales; f__Haliangiaceae; g__Haliangium; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Haliangiales; f__Haliangiaceae; g__Haliangium; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__mle1-27; f__; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__Phaselicystidaceae; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__Phaselicystidaceae; g__Phaselicystis; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__Phaselicystidaceae; g__Phaselicystis; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__Polyangiaceae; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__Polyangiaceae; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__Polyangiaceae; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__Polyangiaceae; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__Polyangiaceae; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__Polyangiaceae; g__; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__Polyangiaceae; g__Pajaroellobacter; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__Polyangiaceae; g__Pajaroellobacter; s__
+k__Bacteria (superkingdom); p__Myxococcota; c__Polyangia; o__Polyangiales; f__Polyangiaceae; g__Pajaroellobacter; s__
+k__Bacteria (superkingdom); p__Parcubacteria; c__Candidatus Kaiserbacteria; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Planctomycetota; c__Planctomycetes; o__Gemmatales; f__Gemmataceae; g__; s__
+k__Bacteria (superkingdom); p__Planctomycetota; c__Planctomycetes; o__Gemmatales; f__Gemmataceae; g__Fimbriiglobus; s__
+k__Bacteria (superkingdom); p__Planctomycetota; c__Planctomycetes; o__Gemmatales; f__Gemmataceae; g__Fimbriiglobus; s__
+k__Bacteria (superkingdom); p__Planctomycetota; c__Planctomycetes; o__Gemmatales; f__Gemmataceae; g__Fimbriiglobus; s__
+k__Bacteria (superkingdom); p__Planctomycetota; c__Planctomycetes; o__Gemmatales; f__Gemmataceae; g__Telmatocola; s__
+k__Bacteria (superkingdom); p__Planctomycetota; c__Planctomycetes; o__Gemmatales; f__Gemmataceae; g__Telmatocola; s__
+k__Bacteria (superkingdom); p__Planctomycetota; c__Planctomycetes; o__Isosphaerales; f__; g__; s__
+k__Bacteria (superkingdom); p__Planctomycetota; c__Planctomycetes; o__Isosphaerales; f__Isosphaeraceae; g__; s__
+k__Bacteria (superkingdom); p__Planctomycetota; c__Planctomycetes; o__Isosphaerales; f__Isosphaeraceae; g__; s__
+k__Bacteria (superkingdom); p__Planctomycetota; c__Planctomycetes; o__Isosphaerales; f__Isosphaeraceae; g__; s__
+k__Bacteria (superkingdom); p__Planctomycetota; c__Planctomycetes; o__Isosphaerales; f__Isosphaeraceae; g__; s__
+k__Bacteria (superkingdom); p__Planctomycetota; c__Planctomycetes; o__Isosphaerales; f__Isosphaeraceae; g__; s__
+k__Bacteria (superkingdom); p__Planctomycetota; c__Planctomycetes; o__Isosphaerales; f__Isosphaeraceae; g__; s__
+k__Bacteria (superkingdom); p__Planctomycetota; c__Planctomycetes; o__Isosphaerales; f__Isosphaeraceae; g__Tundrisphaera; s__
+k__Bacteria (superkingdom); p__Planctomycetota; c__Planctomycetes; o__Isosphaerales; f__Isosphaeraceae; g__Tundrisphaera; s__
+k__Bacteria (superkingdom); p__Planctomycetota; c__Planctomycetes; o__Isosphaerales; f__Isosphaeraceae; g__Tundrisphaera; s__
+k__Bacteria (superkingdom); p__Planctomycetota; c__Planctomycetes; o__Isosphaerales; f__Isosphaeraceae; g__Tundrisphaera; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__Acidiphilium; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__Acidiphilium; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__Acidiphilium; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__Acidiphilium; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__Rhodovastum; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__Rhodovastum; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Azospirillales; f__Inquilinaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Azospirillales; f__Inquilinaceae; g__Inquilinus; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae; g__Phenylobacterium; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae; g__Phenylobacterium; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Paracaedibacterales; f__Paracaedibacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Paracaedibacterales; f__Paracaedibacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Paracaedibacterales; f__Paracaedibacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Beijerinckiaceae; g__alphaI cluster; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Devosiaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Pleomorphomonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae; g__Bradyrhizobium; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae; g__Bradyrhizobium; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae; g__Tardiphaga; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Rickettsiales; f__Rickettsiaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Rickettsiales; f__Rickettsiaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Rickettsiales; f__Rickettsiaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Rickettsiales; f__Rickettsiaceae; g__Rickettsia; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Rickettsiales; f__SM2D12; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Rickettsiales; f__SM2D12; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__Novosphingobium; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__Polymorphobacter; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__Polymorphobacter; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__Rhizorhapis; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__Rhizorhapis; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__; f__; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Limnohabitans; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Polaromonas; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Rhizobacter; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Rhizobacter; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Rhizobacter; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Sphaerotilus; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Neisseriaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Nitrosomonadaceae; g__Ellin6067; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__[Aquaspirillum] arcticum group; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__Undibacterium; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__Undibacterium; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__Undibacterium; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Candidatus Ovatusbacter order incertae sedis; f__Candidatus Ovatusbacter family incertae sedis; g__Candidatus Ovatusbacter; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Diplorickettsiales; f__Diplorickettsiaceae; g__; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Legionellales; f__Legionellaceae; g__Legionella; s__
+k__Bacteria (superkingdom); p__Proteobacteria; c__Gammaproteobacteria; o__Xanthomonadales; f__Rhodanobacteraceae; g__; s__
+k__Bacteria (superkingdom); p__Saccharimonadia; c__Saccharimonadales class incertae sedis; o__Saccharimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Saccharimonadia; c__Saccharimonadales class incertae sedis; o__Saccharimonadales; f__; g__; s__
+k__Bacteria (superkingdom); p__Saccharimonadia; c__Saccharimonadales class incertae sedis; o__Saccharimonadales; f__LWQ8; g__; s__
+k__Bacteria (superkingdom); p__Saccharimonadia; c__Saccharimonadales class incertae sedis; o__Saccharimonadales; f__LWQ8; g__; s__
+k__Bacteria (superkingdom); p__Verrucomicrobiota; c__Chlamydiae; o__Chlamydiales; f__Parachlamydiaceae; g__; s__
+k__Bacteria (superkingdom); p__Verrucomicrobiota; c__Chlamydiae; o__Chlamydiales; f__Parachlamydiaceae; g__Neochlamydia; s__
+k__Bacteria (superkingdom); p__Verrucomicrobiota; c__Verrucomicrobiae; o__Opitutales; f__Opitutaceae; g__Cephaloticoccus; s__
+k__SAR; p__Cercozoa; c__Endomyxa; o__Vampyrellida; f__Leptophryidae; g__; s__
+k__SAR; p__Cercozoa; c__Endomyxa; o__Vampyrellida; f__Leptophryidae; g__Leptophryidae X; s__
+k__SAR; p__Cercozoa; c__Filosa-Granofilosea; o__Limnofilida; f__Limnofilidae; g__Limnofila; s__
+k__SAR; p__Cercozoa; c__Filosa-Granofilosea; o__Limnofilida; f__Limnofilidae; g__Limnofilidae X; s__
+k__SAR; p__Cercozoa; c__Filosa-Imbricatea; o__Spongomonadida; f__Spongomonadidae; g__Spongomonadidae X; s__
+k__SAR; p__Cercozoa; c__Filosa-Sarcomonadea; o__; f__; g__; s__
+k__SAR; p__Cercozoa; c__Filosa-Sarcomonadea; o__Cercomonadida; f__Cercomonadidae; g__Cercomonas; s__Cercomonas celer
+k__SAR; p__Cercozoa; c__Filosa-Sarcomonadea; o__Glissomonadida; f__; g__; s__
+k__SAR; p__Cercozoa; c__Filosa-Sarcomonadea; o__Glissomonadida; f__; g__; s__
+k__SAR; p__Cercozoa; c__Filosa-Sarcomonadea; o__Glissomonadida; f__; g__; s__
+k__SAR; p__Cercozoa; c__Filosa-Sarcomonadea; o__Glissomonadida; f__; g__; s__
+k__SAR; p__Cercozoa; c__Filosa-Sarcomonadea; o__Glissomonadida; f__; g__; s__
+k__SAR; p__Cercozoa; c__Filosa-Sarcomonadea; o__Glissomonadida; f__; g__; s__
+k__SAR; p__Cercozoa; c__Filosa-Sarcomonadea; o__Glissomonadida; f__; g__; s__
+k__SAR; p__Cercozoa; c__Filosa-Sarcomonadea; o__Glissomonadida; f__Allapsidae; g__; s__
+k__SAR; p__Cercozoa; c__Filosa-Sarcomonadea; o__Glissomonadida; f__Allapsidae; g__; s__
+k__SAR; p__Cercozoa; c__Filosa-Sarcomonadea; o__Glissomonadida; f__Allapsidae; g__Allapsidae X; s__
+k__SAR; p__Cercozoa; c__Filosa-Sarcomonadea; o__Glissomonadida; f__Allapsidae; g__Group-Te; s__
+k__SAR; p__Cercozoa; c__Filosa-Sarcomonadea; o__Glissomonadida; f__Sandonidae; g__; s__
+k__SAR; p__Cercozoa; c__Filosa-Thecofilosea; o__; f__; g__; s__
+k__SAR; p__Cercozoa; c__Filosa-Thecofilosea; o__Cryomonadida; f__Rhogostoma-lineage; g__Rhogostoma-lineage X; s__Rhogostoma-lineage X sp.
+k__SAR; p__Ciliophora; c__CONThreeP; o__CONThreeP X; f__Urotrichidae; g__; s__
+k__SAR; p__Ciliophora; c__CONThreeP; o__CONThreeP X; f__Urotrichidae; g__Urotricha; s__Urotricha sp.
+k__SAR; p__Ciliophora; c__Litostomatea; o__Litostomatea X; f__Litostomatea XX; g__; s__
+k__SAR; p__Ciliophora; c__Litostomatea; o__Litostomatea X; f__Litostomatea XX; g__; s__
+k__SAR; p__Ciliophora; c__Litostomatea; o__Litostomatea X; f__Litostomatea XX; g__; s__
+k__SAR; p__Ciliophora; c__Litostomatea; o__Litostomatea X; f__Litostomatea XX; g__Spathidium 1; s__
+k__SAR; p__Ciliophora; c__Litostomatea; o__Litostomatea X; f__Litostomatea XX; g__Spathidium 1; s__
+k__SAR; p__Ciliophora; c__Litostomatea; o__Rhynchostomatia; f__Dileptidae; g__Dileptidae X; s__Dileptidae X sp.
+k__SAR; p__Ciliophora; c__Oligohymenophorea; o__Frontoniidae 2; f__; g__; s__
+k__SAR; p__Ciliophora; c__Oligohymenophorea; o__Frontoniidae 2; f__; g__; s__
+k__SAR; p__Ciliophora; c__Oligohymenophorea; o__Frontoniidae 2; f__Frontoniidae 2 X; g__; s__
+k__SAR; p__Ciliophora; c__Oligohymenophorea; o__Scuticociliatia 2 X; f__Scuticociliatia 2 XX; g__; s__
+k__SAR; p__Ciliophora; c__Oligohymenophorea; o__Scuticociliatia 2 X; f__Scuticociliatia 2 XX; g__; s__
+k__SAR; p__Ciliophora; c__Oligohymenophorea; o__Scuticociliatia 2 X; f__Scuticociliatia 2 XX; g__Scuticociliatia 2 XX sp.; s__
+k__SAR; p__Ciliophora; c__Phyllopharyngea; o__; f__; g__; s__
+k__SAR; p__Ciliophora; c__Phyllopharyngea; o__Cyrtophoria 4; f__; g__; s__
+k__SAR; p__Ciliophora; c__Phyllopharyngea; o__Cyrtophoria 4; f__; g__; s__
+k__SAR; p__Ciliophora; c__Phyllopharyngea; o__Suctoria X; f__Suctoria XX; g__Suctoria XX sp.; s__
+k__SAR; p__Ciliophora; c__Spirotrichea; o__; f__; g__; s__
+k__SAR; p__Ciliophora; c__Spirotrichea; o__; f__; g__; s__
+k__SAR; p__Ciliophora; c__Spirotrichea; o__Hypotrichia XX; f__; g__; s__
+k__SAR; p__Ciliophora; c__Spirotrichea; o__Hypotrichia XX; f__Hypotrichia XX sp.; g__; s__
+k__SAR; p__Dinoflagellata; c__Dinophyceae; o__Gymnodiniales; f__Gymnodiniaceae; g__Gymnodinium; s__
+k__SAR; p__Ochrophyta; c__Chrysophyceae; o__Chrysophyceae X; f__Chrysophyceae Clade-C; g__; s__
+k__SAR; p__Ochrophyta; c__Chrysophyceae; o__Chrysophyceae X; f__Chrysophyceae Clade-D; g__Chrysophyceae Clade-D X; s__
+k__SAR; p__Ochrophyta; c__Chrysophyceae; o__Chrysophyceae X; f__Chrysophyceae Clade-D; g__Hydrurus; s__
+k__SAR; p__Ochrophyta; c__Chrysophyceae; o__Chrysophyceae X; f__Chrysophyceae XX; g__; s__
+k__SAR; p__Ochrophyta; c__Xanthophyceae; o__Xanthophyceae X; f__; g__; s__
+k__SAR; p__Opalozoa; c__Bicoecea; o__Pseudodendromonadales; f__Pseudodendromonadales X; g__Adriamonas; s__
+k__SAR; p__Opalozoa; c__Bicoecea; o__Pseudodendromonadales; f__Pseudodendromonadales X; g__Pseudodendromonadales XX; s__
+k__SAR; p__Pseudofungi; c__Oomycota; o__Saprolegniales; f__Aquastella family incertae sedis; g__Aquastella; s__
