@@ -160,21 +160,20 @@ There are many different files that are needed in this TotalRNA phyloseq counts 
 
 ICE and CC phyloseq objects:
 rRNA count and taxa table
-mRNA count and taxa table
 site/sequence info/mRNA counts with site info metadata
 
-2 sample types * 2 count tables * 1 metadata options = 4 phyloseq objects
-(ice OR cryoconite)       (mRNA or rRNA)    (site information)
+2 sample types * 2 count tables * 1 metadata options = 3 phyloseq objects
+(ice OR cryoconite)    (site information)
 ALLSTOIC is ice and cc MERGED and KATIE25 removed. 
-KATIE25 should be looked at against STOIC25 in *"ALLSTOIC_mRNA_siteMD and ALLSTOIC_rRNA_siteMD"*
+KATIE25 should be looked at against STOIC25 in *"ALLSTOIC_mRNA_siteMD and ALLSTOIC"*
 
 Phyloseq object file name order will go:
-PHY_SAMPLE _ which RNA _ metadata
+PHY_SAMPLE
 
 Examples:
-PHY_cc_mRNA_siteMD
-PHY_ice_rRNA_siteMD
-ALLSTOIC_mRNA_siteMD
+PHY_cc
+PHY_ice
+ALLSTOIC
 
 phyloseq is assumed for ALLSTOIC, if it is a psmelt into dataframe then it will end with "df"
 
@@ -243,9 +242,9 @@ ccsiteMD <- cc_MD_CSV %>%
 ```{r}
 
 #Phyloeq objects
-PHY_ice_rRNA_siteMD <- phyloseq(ice_rRNA_counts, ice_rRNA_taxa, icesiteMD)
+PHY_ice <- phyloseq(ice_rRNA_counts, ice_rRNA_taxa, icesiteMD)
 
-PHY_cc_rRNA_siteMD <- phyloseq(cc_rRNA_counts, cc_rRNA_taxa, ccsiteMD)
+PHY_cc <- phyloseq(cc_rRNA_counts, cc_rRNA_taxa, ccsiteMD)
 
 
 ```
@@ -254,13 +253,12 @@ PHY_cc_rRNA_siteMD <- phyloseq(cc_rRNA_counts, cc_rRNA_taxa, ccsiteMD)
 ```{r}
 ##ALLSTOIC
 
-ALLSTOIC_rRNA_siteMD <- merge_phyloseq(PHY_ice_rRNA_siteMD, PHY_cc_rRNA_siteMD)
+ALLSTOIC <- merge_phyloseq(PHY_ice, PHY_cc)
 
 
 ```
 
 # Rename objects
-
 ```{r}
 
 #|label: ALLSTOIC obj
@@ -285,10 +283,11 @@ remove_site6 <- function(...) {
 
 # Call the function with your phyloseq objects
 remove_site6(
-    ALLSTOIC_rRNA_siteMD,
-    PHY_cc_rRNA_siteMD,
-    PHY_ice_rRNA_siteMD
+    ALLSTOIC,
+    PHY_cc,
+    PHY_ice
 )
+
 
 ```
 
@@ -314,7 +313,7 @@ process_phyloseq_objects <- function(...) {
         #tax_table(phy_obj) <- apply(tax_table(phy_obj), 2, function(x) gsub("X", "", x))
 
         # Taxonomic condensation
-        phy_obj_taxglom <- tax_glom(phy_obj, taxrank = "phylum")
+        phy_obj_taxglom <- tax_glom(phy_obj, taxrank = "genus")
 
         # Melt the data into a DataFrame
         tempdf <- psmelt(phy_obj_taxglom)
@@ -330,10 +329,10 @@ process_phyloseq_objects <- function(...) {
 }
 
 
-# ALLSTOIC_rRNA change taxrank = "genus"
-process_phyloseq_objects( ALLSTOIC_rRNA_siteMD_no_site6, 
-                          PHY_cc_rRNA_siteMD_no_site6,
-                          PHY_ice_rRNA_siteMD_no_site6)
+# ALLSTOIC change taxrank = "genus"
+process_phyloseq_objects( ALLSTOIC_no_site6, 
+                          PHY_cc_no_site6,
+                          PHY_ice_no_site6)
 
 ```
 
@@ -342,7 +341,7 @@ process_phyloseq_objects( ALLSTOIC_rRNA_siteMD_no_site6,
 
 rename_phyloseq_objects <- function(object_names) {
     for (original_name in object_names) {
-        # Remove '_no_site6_TRUE' from the name and prepend 'AC_'
+        # Remove '_no_site6_TRUE' from the name and append 'AC_'
         new_name <- gsub("_no_site6_TRUE", "", original_name)
         new_name <- paste("AC", new_name, sep = "_")
 
@@ -356,9 +355,9 @@ rename_phyloseq_objects <- function(object_names) {
 
 # List of original phyloseq object names
 original_names <- c(
-  "PHY_cc_rRNA_siteMD_no_site6_TRUE",
-  "PHY_ice_rRNA_siteMD_no_site6_TRUE",
-  "ALLSTOIC_rRNA_siteMD_no_site6_TRUE"
+  "PHY_cc_no_site6_TRUE",
+  "PHY_ice_no_site6_TRUE",
+  "ALLSTOIC_no_site6_TRUE"
 )
 
 # Call the function
@@ -366,31 +365,89 @@ rename_phyloseq_objects(original_names)
 
 
 ```
-#### Phylo seq object evolutions
-#1: components of the first object : cc_rRNA_counts, cc_rRNA_taxa, ccsiteMD
-#                                  ice_rRNA_counts, ice_rRNA_taxa, icesiteMD
-#2 Step 1 makes the TYPE specific phyloseq object, like: PHY_ice_mRNA_siteMD
-#3 Combine the PHY_ice_X_Y with the same PHY_cc_X_Y (matching RNA and metadata) for ALLSTOIC_XRNA_Y
-#4 Run ie, ALLSTOIC_mRNA_seqMD through function to remove Site6 (KATIE25/0801ICE5 day 213) for ALLSTOIC_mRNA_seqMD_no_site6
-#5 Run ie, ALLSTOIC_mRNA_seqMD_no_site6 through function to fix the taxonomy for ALLSTOIC_mRNA_seqMD_no_site6_TRUE
-# and get an equivalent ALLSTOIC_X_Y_no_site6_df as a dataframe
-#6 Rename the terrible names to AC_ALLSTOIC_X_Y
+
+
+
+```{text}
+
+#List of names for the evolution of the files
+#Start: 1
+#PHY_ice, PHY_cc, ALLSTOIC
+
+#2: Remove "site 6" which is just KATIE25 sample used for sequencing variation
+PHY_ice_no_site6, PHY_cc_no_site6, ALLSTOIC_no_site6
+
+3:
+"Removes all the '_' identifyers in the taxa names and tax glom on the genus level
+PHY_ice_no_site6_TRUE, PHY_cc_no_site6_TRUE, ALLSTOIC_no_site6_TRUE
+
+3: (df version)
+PHY_ice_no_site6_df, PHY_cc_no_site6_df, ALLSTOIC_no_site6_df
+
+4 Fix phyloseq object names
+AC_ALLSTOIC, AC_PHY_cc, AC_PHY_ice
+
+
+```
+
+
+##Phyla bar sites separated, NOT RAREFIED
+
+```{r}
+
+
+#ALLSTOIC_no_site6_df is the same as the phyloseq object "AC_ALLSTOIC", check to verify
+
+AC_ALLSTOIC_df <-  psmelt(AC_ALLSTOIC)
+
+  
+#ALLSTOIC_no_site6_df %>%
+AC_ALLSTOIC_df %>%
+  mutate(phylum = reorder(phylum, Abundance)) %>%
+  ggplot(aes(x= as.factor(DAYOFYEAR), y=Abundance, fill = phylum)) + 
+  geom_bar(position = "fill", stat = 'identity') +
+  geom_vline(xintercept = as.factor(221)) +
+  scale_y_continuous(label=comma) +
+  facet_grid(SITE~TYPE) +
+  scale_fill_manual(values = get_wants_hue(25)) + #values = taxa_colors) +
+  labs(title = "All samples, not rarefied - taxglom on Genera", x = "Day", y = "Relative Abundance", fill = "Phyla") +
+  scale_x_discrete(breaks=c(209, 213, 217, 219, 221, 222, 225, 230)) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust=1))
+  
+  
+```
+
 
 ###RAREFY THE PHYLOSEQ OBJECTS####
 ```{r}
 
-#Test for rarefraction curve. With this study, we cant toss any samples, so we just rarefy to the smallest libary
+#Test for rarefraction curve. With this study, we can't toss any samples, so we just rarefy to the smallest libary
 
 
-AC_ALLSTOIC_rRNA_siteMD
-OBJ <- AC_PHY_cc_rRNA_siteMD
-OBJ <-AC_PHY_ice_rRNA_siteMD
+AC_ALLSTOIC
+OBJ <- AC_PHY_cc
+OBJ <-AC_PHY_ice
 
 
 min_sample <- min(sample_sums(OBJ))
-#CC is 4,796,498
-#ICE is 3,931,675
+max_sample <- max(sample_sums(OBJ))
+#CC min 931488, max = 3206266
+#ICE min 590422, max = 1794355
 
+data <- data.frame(
+  Category = c("CC", "CC", "ICE", "ICE"),
+  Values = c(931488, 3206266, 590422, 1794355)
+)
+
+# Create the dot graph
+ggplot(data, aes(x = Category, y = Values)) +
+  geom_point(aes(color = Category), size = 3) +
+  labs(title = "Min and max library size for CC and ICE", x = "Category", y = "Values") +
+  theme_minimal()
+
+
+#Below is just to look at the library sample sizes
 hist(sample_sums(OBJ), main="Histogram: Read Counts", xlab="Total Reads", 
      border="blue", col="green", las=1, breaks=100)
 
@@ -411,44 +468,107 @@ otu.rarecurve = rarecurve(otu.rare, step = 10000, label = F)
 
 ```
 
-###Functionize the major taxa pruning and the rarefying and ploting
+###Functionize the major taxa pruning and the rarefying and ploting, with intermediates included. 
 ```{r}
-# Function to filter for major taxa and rarefy the data
-filter_and_rarefy <- function(pseq, output_file) {
-  # Calculate the total read count for each sample
-  total_counts <- rowSums(t(otu_table(pseq)))
 
-  # Calculate the percentage of each phylum relative to the total read count
-  phylum_percentages <- (otu_table(pseq) / total_counts) * 100
+#AC_PHY_ice == PHY_ice_no_site6_df, 
+#AC_PHY_cc == PHY_cc_no_site6_df, 
+#AC_ALLSTOIC == ALLSTOIC_no_site6_df
 
-  # Identify the major phyla that represent more than 1% of the total read count
-  major_phyla <- rownames(phylum_percentages)[apply(phylum_percentages, 1, function(x) any(x > 1))]
+PHYLOSEQOBJECT = AC_PHY_cc
 
-  # Filter for the major taxa
-  filtered_physeq <- prune_taxa(major_phyla, pseq)
+#Taxglom OTU sheet
+taxglom_csv <- PHY_cc_no_site6_df  %>%
+  select(OTU, Sample, Abundance, phylum, class, order, family, genus) %>%
+  pivot_wider(names_from = Sample, values_from = Abundance)
 
-  # Rarefy the filtered data
-  rarefied_physeq <- rarefy_even_depth(
-    filtered_physeq, 
-    sample.size = min(sample_sums(filtered_physeq)),
-    rngseed = FALSE, replace = TRUE, trimOTUs = TRUE, verbose = TRUE
-  )
+write.csv(taxglom_csv, "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/cryoconite_taxglom_cc_df.csv")
 
-  # Save the rarefied object to a file
-  saveRDS(rarefied_physeq, file = output_file)
-  
-  return(rarefied_physeq)
-}
 
-# Apply the function to both datasets and save the results
-ICE_rarefy <- filter_and_rarefy(AC_PHY_ice_rRNA_siteMD, "rarefied_ice.rds")
-CC_rarefy <- filter_and_rarefy(AC_PHY_cc_rRNA_siteMD, "rarefied_cc.rds")
+#If you want to see the MAJOR MEMBERS before rarefying (those that represent >1% of any of the original samples)
+# Step 1: Calculate Total Counts
+total_counts <- rowSums(t(otu_table(PHYLOSEQOBJECT)))
+print("Total counts per sample:")
+print(total_counts)
+
+# Step 2: Calculate Phylum Percentages
+phylum_percentages <- (otu_table(PHYLOSEQOBJECT) / total_counts) * 100
+print("Phylum percentages:")
+print(phylum_percentages)
+
+# Step 3: Identify Major Phyla
+major_phyla <- rownames(phylum_percentages)[apply(phylum_percentages, 1, function(x) any(x > 1))]
+print("Major phyla (more than 1%):")
+print(major_phyla)
+
+# Step 4: Filter for Major Taxa and Display Counts
+total_phyla <- length(unique(rownames(otu_table(PHYLOSEQOBJECT))))
+print(paste("Starting dataframe of Ice had", total_phyla, "phyla."))
+print(paste("There are", length(major_phyla), "major phyla (more than 1%)."))
+
+filtered_physeq <- prune_taxa(major_phyla, PHYLOSEQOBJECT)
+print("Filtered physeq:")
+print(filtered_physeq)
+check <- psmelt(filtered_physeq)
+
+check_csv <- check  %>%
+  select(OTU, Sample, Abundance) %>%
+  pivot_wider(names_from = Sample, values_from = Abundance)
+
+write.csv(check_csv, "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/ice_filteredfor_majortaxa.csv")
+
+# Step 5: Rarefy the Filtered Data, change the variable name to make each rarefied_filteredphyseq_CC and rarefied_filteredphyseq_ICE
+rarefied_filteredphyseq_CC <- rarefy_even_depth(
+  filtered_physeq, 
+  sample.size = min(sample_sums(filtered_physeq)),
+  rngseed = FALSE, replace = TRUE, trimOTUs = TRUE, verbose = TRUE
+)
+
+#Rarefied after filtering out the <1% members
+rarefied_filteredphyseq_ICE
+
+rarefied_filteredphyseq_ICE_df <- psmelt(rarefied_filteredphyseq_ICE)
+
+rarefied_filteredphyseq_ICE_df_csv <- rarefied_filteredphyseq_ICE_df %>%
+  select(OTU, Sample, Abundance) %>%
+  pivot_wider(names_from = Sample, values_from = Abundance)
+
+write.csv(rarefied_filteredphyseq_ICE_df_csv, "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/ICE_filtered_rare_ICE_df.csv")
+
+rarefied_filteredphyseq_CC
+
+rarefied_filteredphyseq_CC_df <- psmelt(rarefied_filteredphyseq_CC)
+
+rarefied_filteredphyseq_CC_df_csv <- rarefied_filteredphyseq_CC_df %>%
+  select(OTU, Sample, Abundance) %>%
+  pivot_wider(names_from = Sample, values_from = Abundance)
+
+write.csv(rarefied_filteredphyseq_CC_df_csv, "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/CC_filtered_rare_CC_df.csv")
+
+###########
+#Step 1
+#Rarefy without filtering
+
+rarefied_physeq_CC<- rarefy_even_depth(
+  AC_PHY_cc , 
+  sample.size = min(sample_sums(AC_PHY_cc)),
+  rngseed = FALSE, replace = TRUE, trimOTUs = TRUE, verbose = TRUE
+)
+
+rarefied_physeq_ICE<- rarefy_even_depth(
+  AC_PHY_ice , 
+  sample.size = min(sample_sums(AC_PHY_ice)),
+  rngseed = FALSE, replace = TRUE, trimOTUs = TRUE, verbose = TRUE
+)
+
+
+
 
 ###To make the stack barchart:
 
 # Load the pre-rarefied objects
-ICE_rarefy <- readRDS("rarefied_ice.rds")
-CC_rarefy <- readRDS("rarefied_cc.rds")
+rarefied_physeq_ICE
+rarefied_physeq_CC
 
 # Define a function to generate the plot from the rarefied data
 generate_plot <- function(pseq, plot_title) {
@@ -459,7 +579,7 @@ generate_plot <- function(pseq, plot_title) {
   p <- ggplot(melted_physeq, aes(x = DAYOFYEAR, y = Abundance, fill = reorder(phylum, Abundance))) + 
     geom_bar(stat = 'identity', position = "fill") + 
     facet_grid(SITE ~ TYPE) +
-    scale_fill_manual(values = taxa_colors) + 
+    scale_fill_manual(values = get_wants_hue(30)) + # taxa_colors) + 
     labs(title = plot_title, x = "Day", y = "Relative Abundance", fill = "Phyla") +
     scale_x_discrete(breaks = c(209, 213, 217, 219, 222, 225, 230)) +
     scale_y_continuous(labels = scales::comma) +
@@ -472,22 +592,36 @@ generate_plot <- function(pseq, plot_title) {
 }
 
 # Generate plots from the pre-rarefied data
-plot_ice <- generate_plot(ICE_rarefy, "Ice Library Rarefied")
-plot_cc <- generate_plot(CC_rarefy, "Cryoconite Library Rarefied")
+plot_ice <- generate_plot(rarefied_physeq_ICE, "Ice Library Rarefied")
+plot_cc <- generate_plot(rarefied_physeq_CC, "Cryoconite Library Rarefied")
 
 # To view the plots, you can use:
 print(plot_ice)
 print(plot_cc)
 
-CC_rare_df <- psmelt(CC_rarefy)
-ICE_rare_df <- psmelt(ICE_rarefy)
+CC_rare_df <- psmelt(rarefied_physeq_CC)
+ICE_rare_df <- psmelt(rarefied_physeq_ICE)
+
+CC_rare_df_csv <- CC_rare_df %>%
+  select(OTU, Sample, Abundance, kingdom, phylum, class, order, family) %>%
+  pivot_wider(names_from = Sample, values_from = Abundance)
+
+write.csv(CC_rare_df_csv, "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/Cryoconite_rare_df.csv")
+
+ICE_rare_df_csv <- ICE_rare_df %>%
+  select(OTU, Sample, Abundance, kingdom, phylum, class, order, family, genus) %>%
+  pivot_wider(names_from = Sample, values_from = Abundance)
+
+
+write.csv(ICE_rare_df_csv, "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/Ice_rare_df.csv")
+
 
 ```
 
 
 ```{r}
 
-ALLSTOIC_rare <- merge_phyloseq(CC_rarefy, ICE_rarefy)
+ALLSTOIC_rare <- merge_phyloseq(rarefied_physeq_CC, rarefied_physeq_ICE)
 ALLSTOIC_rare_df <- psmelt(ALLSTOIC_rare)
 
 write.csv(ALLSTOIC_rare_df, "~/Documents/AU/DeepPurple/Cryobio/STOIC/data/ALLSTOIC_rare_df.csv")
@@ -512,53 +646,37 @@ ALLSTOIC_rare_df2 <- ALLSTOIC_rare_df %>%
     phylum = reorder(phylum, Abundance)
   ) %>%
 # Categorize phyla into Group1 (Prokaryotes, Eukaryotes, Protozoa)
-  mutate(
+ mutate(
     Group1 = case_when(
-      phylum %in% c(" Cyanobacteria", " Chloroflexi", " Proteobacteria", " Bacteroidota", 
-                    " Myxococcota", " Armatimonadota", " Acidobacteriota", " Actinobacteriota", 
-                    " Bdellovibrionota", " Planctomycetota", " Verrucomicrobiota", " Dojkabacteria", 
-                    " Deinococcota", "Abditibacteriota", "Gemmatimonadota", "Berkelbacteria", 
-                    " Firmicutes", " Saccharimonadia", " Nitrospirota", " Parcubacteria", "Dependentiae") ~ "Prokaryotes",
-      phylum %in% c(" Chlorophyta", " Streptophyta", " Basidiomycota", " Tardigrada", " Ochrophyta", 
-                    " Chytridiomycota", " Rotifera", "Ascomycota", "Nucleariidea", " Blastocladiomycota", 
-                    " Ichthyosporea", " Opalozoa", " Choanoflagellida (phylum)", " Cryptophyta", " Pseudofungi") ~ "Eukaryotes",
-      phylum %in% c(" Cercozoa", " Ciliophora", " Conosa", " Lobosa", " Dinoflagellata", " Opalozoa") ~ "Protozoa",
+      phylum %in% c(" Cyanobacteria", " Proteobacteria", " Bacteroidota", " Myxococcota", 
+                    " Armatimonadota", " Acidobacteriota", " Actinobacteriota", " Bdellovibrionota", 
+                    " Planctomycetota", " Verrucomicrobiota", " Deinococcota", " Abditibacteriota", 
+                    " Gemmatimonadota", " Firmicutes", " Nitrospirota") ~ "Prokaryotes",
+      phylum %in% c(" Chlorophyta", " Streptophyta", " Basidiomycota", " Ochrophyta", 
+                    " Chytridiomycota", " Rotifera", " Ascomycota", " Nucleariidea", 
+                    " Blastocladiomycota", " Opalozoa", " Choanoflagellida (phylum)", 
+                    " Cryptophyta", " Pseudofungi") ~ "Eukaryotes",
+      phylum %in% c(" Cercozoa", " Ciliophora", " Conosa", " Lobosa", " Dinoflagellata") ~ "Protozoa",
       TRUE ~ "Unassigned"  # Default case for phyla not listed
     )
-  )
-
-
-total_counts <- rowSums(t(otu_table(ALLSTOIC_rare)))
-
-# Calculate the percentage of each phylum relative to the total read count
-phylum_percentages <- (otu_table(ALLSTOIC_rare) / total_counts) * 100
-
-# Identify the major phyla that represent more than 1% of the total read count
-major_phyla <- rownames(phylum_percentages)[apply(phylum_percentages, 1, function(x) any(x > 1))]
-
-#filter for the major taxa then rarefy
-filtered_physeq <- prune_taxa(major_phyla, ALLSTOIC_rare)
-
-filtered_physeq_df <- psmelt(filtered_physeq)
-
+)
 
 #Need the same color pallete for the taxa
-rarefied_taxa <- unique(filtered_physeq_df$phylum)
-nonrarefied_taxa <- unique(ALLSTOIC_rare_df2$phylum)
-all_taxa <- unique(c(rarefied_taxa, nonrarefied_taxa))
+all_taxa <- unique(ALLSTOIC_rare_df$phylum)
 set.seed(1000)
+number <- length(unique(ALLSTOIC_rare_df$phylum))
 
-colors <- get_wants_hue(length(all_taxa))
+colors <- get_wants_hue(number)
 taxa_colors <- setNames(colors, all_taxa)
 
-ALLSTOIC_rared_stackbar <- ALLSTOIC_rare_df %>%
+ALLSTOIC_rared_stackbar <- ALLSTOIC_rare_df2  %>%
   mutate(phylum = reorder(phylum, Abundance)) %>%
   ggplot(aes(x= as.factor(DAYOFYEAR), y=Abundance, fill = phylum)) + 
   geom_bar(stat = 'identity', position = "fill" ) +
   scale_y_continuous(label=comma) +
   facet_grid(SITE~TYPE) +
   scale_fill_manual(values = taxa_colors) +
-  labs(title = "Rarefied library sizes with Phyla >1%", x = "Day", y = "Relative Abundance", fill = "Phyla") +
+  labs(title = "All Rarefied Data", x = "Day", y = "Relative Abundance", fill = "Phyla") +
   scale_x_discrete(breaks=c(209, 213, 217, 219, 222, 222, 225, 230)) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust=1))
@@ -569,15 +687,15 @@ ALLSTOIC_rared_stackbar
 ```
 
 ```{r}
-CC_rarefy
-ICE_rarefy
+ALLSTOIC_rare <- merge_phyloseq(rarefied_physeq_CC, rarefied_physeq_ICE)
+ALLSTOIC_rare_df <- psmelt(ALLSTOIC_rare)
 
 # Load the necessary libraries
 library(phyloseq)
 library(vegan)
 
 # Example phyloseq object
-phyloseq_obj <- CC_rarefy
+phyloseq_obj <- rarefied_physeq_CC
 
 # Step 1: Calculate Bray-Curtis distance matrix
 dist_matrix <- phyloseq::distance(phyloseq_obj, method = "bray")
@@ -602,7 +720,7 @@ print(anosim_result)
 
 ```{r}
 
-#Need to break up the rarefied STOIC data by Eukaryotes, Prokaryotes and Protists, like in Maria's paper. Then throw shannon diversity and maybe an NMDS plot at each
+#Need to break up the rarefied STOIC data by Eukaryotes, Prokaryotes and Protists, like in Maria's paper. Then show shannon diversity and maybe an NMDS plot at each
 
 ALLSTOIC_rare_df3 <- ALLSTOIC_rare_df2 %>%
   group_by(Sample) %>%
@@ -634,10 +752,10 @@ Euk_barplort <- Euk_ALLSTOIC  %>%
   scale_y_continuous(label=comma) +
   facet_grid(SITE~TYPE) +
   scale_fill_manual(values = taxa_colors) +
-  labs(title = "AllSTOIC Eukaryotes", x = "Day", y = "Relative Abundance (%)", fill = "Eukaryotic Phyla") +
+  labs(title = "Eukaryotic Diversity", x = "Day", y = "Relative Abundance (%)", fill = "Eukaryotic Phyla") +
   scale_x_discrete(breaks=c(209, 213, 217, 219, 222, 222, 225, 230)) +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust=1))
   
 Euk_barplort
 
@@ -650,10 +768,10 @@ Prok_barplot <- Prok_ALLSTOIC %>%
   scale_y_continuous(label=comma) +
   facet_grid(SITE~TYPE) +
   scale_fill_manual(values = taxa_colors) +
-  labs(title = "ALLSTOIC Prokaryotes", x = "Day", y = "Relative Abundance (%)", fill = "Prokaryotic Phylum") +
+  labs(title = "Prokaryotic Diversity", x = "Day", y = "Relative Abundance (%)", fill = "Prokaryotic Phylum") +
   scale_x_discrete(breaks=c(209, 213, 217, 219, 222, 225, 230)) +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust=1))
   
 
 Prok_barplot
@@ -666,10 +784,10 @@ Prot_barplot <- Prot_ALLSTOIC %>%
   scale_y_continuous(label=comma) +
   facet_grid(SITE~TYPE) +
   scale_fill_manual(values = taxa_colors) +
-  labs(title = "Relative Abundance of Protists", x = "Day", y = "Realtive Abundance", fill = "Protista Phyla") +
+  labs(title = "Protistian Diversity", x = "Day", y = "Realtive Abundance", fill = "Protista Phyla") +
   scale_x_discrete(breaks=c(209, 213, 217, 219, 222, 225, 230)) +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust=1))
   
 
 Prot_barplot
@@ -686,19 +804,28 @@ Euk_ALLSTOIC_phy <- subset_taxa(ALLSTOIC_rare, phylum %in% c(" Chlorophyta", " S
 
 Euk_div <- diversity(Euk_ALLSTOIC_phy, index = "all")
 
+Euk_ALLSTOIC_phy_ICE <- subset_samples(Euk_ALLSTOIC_phy , TYPE == "ice")
+Euk_ALLSTOIC_phy_CC <- subset_samples(Euk_ALLSTOIC_phy , TYPE == "cryoconite")
+
 #Prokaryotes
-Prok_ALLSTOIC_phy <- subset_taxa(ALLSTOIC_rare, phylum %in% c(" Cyanobacteria", " Chloroflexi", " Proteobacteria", " Bacteroidota", 
-                    " Myxococcota", " Armatimonadota", " Acidobacteriota", " Actinobacteriota", 
-                    " Bdellovibrionota", " Planctomycetota", " Verrucomicrobiota", " Dojkabacteria", 
-                    " Deinococcota", "Abditibacteriota", "Gemmatimonadota", "Berkelbacteria", 
-                    " Firmicutes", " Saccharimonadia", " Nitrospirota", " Parcubacteria", "Dependentiae"))
+Prok_ALLSTOIC_phy <- subset_taxa(ALLSTOIC_rare, phylum %in% c(" Cyanobacteria",  " Acidobacteriota",  " Actinobacteriota",   
+                                                              " Bacteroidota",  " Proteobacteria", " Myxococcota",       
+                                                              " Armatimonadota", " Planctomycetota", " Bdellovibrionota", 
+                                                              " Abditibacteriota", " Deinococcota", " Gemmatimonadota", 
+                                                              " Verrucomicrobiota", " Firmicutes", " Nitrospirota" ))
 
 diversity(Prok_ALLSTOIC_phy, index = "all")
 
+Prok_ALLSTOIC_phy_ICE <- subset_samples(Prok_ALLSTOIC_phy , TYPE == "ice")
+Prok_ALLSTOIC_phy_CC <- subset_samples(Prok_ALLSTOIC_phy , TYPE == "cryoconite")
+
 #Protists
-Protist_ALLSTOIC_phy <- subset_taxa(ALLSTOIC_rare, phylum %in% c(" Cercozoa", " Ciliophora", " Conosa", " Lobosa", " Dinoflagellata", " Opalozoa"))
+Protist_ALLSTOIC_phy <- subset_taxa(ALLSTOIC_rare, phylum %in% c(" Ciliophora",  " Conosa",  " Cercozoa", " Lobosa", " Dinoflagellata"))
 
 diversity(Protist_ALLSTOIC_phy, index = "all")
+
+Protist_ALLSTOIC_phy_ICE <- subset_samples(Protist_ALLSTOIC_phy, TYPE == "ice")
+Protist_ALLSTOIC_phy_CC <- subset_samples(Protist_ALLSTOIC_phy, TYPE == "cryoconite")
 
 #Shannon diversity plots 
 
@@ -707,11 +834,11 @@ library(phyloseq)
 library(ggplot2)
 
 # Ensure that SITE is treated as a factor
-AC_PHY_ice_rRNA_siteMD@sam_data$SITE <- as.factor(AC_PHY_ice_rRNA_siteMD@sam_data$SITE)
+AC_PHY_ice@sam_data$SITE <- as.factor(AC_PHY_ice@sam_data$SITE)
 
 # Calculate richness (Shannon Index) and create the base plot
 richness_df <- plot_richness(
-  ICE_rarefy, 
+  ALLSTOIC_rare , 
   x = "SITE", 
   measures = c("Shannon")
 )
@@ -726,7 +853,7 @@ richness_plot <- ggplot(richness_df$data, aes(x = SITE, y = value)) +
   geom_jitter(aes(color = DAYOFYEAR), width = 0.2, alpha = 0.8, size = 2) +  # Jittered points colored by DAYOFYEAR
   facet_grid(variable ~ TYPE, scales = "free") +  # Facet by diversity measure and TYPE
   theme_bw() +
-  labs(title = "Ice Shannon Diversity by Site", x = "Site", y = "Shannon Diversity Index") +
+  labs(title = "Prokaryotic Shannon Diversity by Site", x = "Site", y = "Shannon Diversity Index") +
   theme(legend.position = "right",  # Position the legend to the right
         strip.background = element_rect(fill = "white"),
         axis.text.x = element_text(angle = 0, vjust = 0, hjust = 0.5))
@@ -742,6 +869,7 @@ library(phyloseq)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
+library(car)
 
 
 ##Statistical testing on the Shannon diversity
@@ -750,7 +878,10 @@ richness_data <- richness_df$data #%>%
 
 # Check normality of the Shannon diversity
 shapiro.test(richness_data$value)
-shapiro.test(CC_rarefy)
+
+#If shapiro is < 0.05, the data do not follow a normal distribution, do Levene's Test to check varience homogeneity
+levenResult <- leveneTest(value ~ SITE, data = richness_data)
+levenResult
 
 # Perform ANOVA to compare Shannon diversity across sites if normal, shapiro > 0.05. If <0.05, then do Kruskal-wallis
 anova_result <- aov(value ~ SITE, data = richness_data)
@@ -772,7 +903,7 @@ print(dunn_result)
 
 
 ```
-
+#Above as a function
 ```{r}
 # Check normality using Shapiro-Wilk test
 shapiro_test <- shapiro.test(richness_data$value)
@@ -832,92 +963,8 @@ if (shapiro_test$p.value <= 0.05) {
 ## CCA for a mixed for both, only good for mRNA_MD stuff.
 
 
-
-ps = PHY_cc_rRNA_siteMD
-
-ps_log <- transform_sample_counts(ps, function(x) log(x + 1))
-  
-# First, extract the abundance matrix from your phyloseq object
-otu_mat <- otu_table(ps_log)
-totu <- t(otu_mat)
-# Apply the Hellinger transformation
-otu_mat_hellinger <- decostand(totu, method = "hellinger")
-rda_otu <- rda(otu_mat_hellinger)
-
-plot(rda_otu)
-
-rda_otu$CCA
-
-psmelt(rda_otu) %>%
-  ggplot() %>%
-  geom_point(aes(x = PC1, y = PC2)) 
-
-# If you need to, you can put this transformed matrix back into a phyloseq object
-otu_table(ps) <- otu_mat_hellinger
-
-set.seed(1)
-dist = "bray"
-ord_meths = c("NMDS", "CCA", "PCoA")
-plist = llply(as.list(ord_meths), function(i, phyloseq, dist){
-        ordi = ordinate(phyloseq, method=i, distance=dist)
-        plot_ordination(phyloseq, ordi, "SITE", color="TYPE")
-}, PHY_cc_rRNA_seqMD, dist)
-
-names(plist) <- ord_meths
-
-
-pdataframe = ldply(plist, function(x){
-    df = x$data[, 1:2]
-    colnames(df) = c("Axis_1", "Axis_2")
-    return(cbind(df, x$data))
-})
-names(pdataframe)[1] = "method"
-
-
-p = ggplot(pdataframe, aes(Axis_1, Axis_2, color=as.factor(libraryprep), shape=as.factor(SITE))) + 
-  geom_point(size=4) +
-  facet_wrap(~method, scales="free") +
-  scale_fill_brewer(type="qual", palette="Set1") +
-  scale_colour_brewer(type="qual", palette="Set1") +
-  labs( shape = "Site", color = "Library Prep", title = "PHY_cc_rRNA_seqMD Libprep") +
-  theme_bw()
-
-p
-
-```
-
 https://david-barnett.github.io/microViz/articles/web-only/ordination.html
 
-```{r}
-
-##PCA with loading vectors and iris plot
-
-#PCA
-#PHY_cc_rRNA_siteMD %>%
-CC_rarefy %>%
-  tax_transform("clr", rank = "phylum") %>%
-  # when no distance matrix or constraints are supplied, PCA is the default/auto ordination method
-  ord_calc() %>%
-  ord_plot(color = "DAYOFYEAR", shape = "SITE", size = 2) +
-  scale_colour_brewer(palette = "Dark2")
-
-
-#ALLSTOIC_rRNA_siteMD_no_site6_TRUE %>%
-ALLSTOIC_rare %>%
-  tax_transform("clr", rank = "phylum") %>%
-  # when no distance matrix or constraints are supplied, PCA is the default/auto ordination method
-  ord_calc() %>%
-  ord_plot(color = "DAYOFYEAR", shape = "SITE", plot_taxa = 1:5, size = 2) +
-  labs(title = "Ice rRNA Phylum level",shape = "Site", color = "Library Preparation Date") +
-  scale_colour_brewer(palette = "Dark2")
-
-#PHY_ice_rRNA_siteMD %>%
-ICE_rarefy %>%
-  tax_transform("clr", rank = "phylum") %>%
-  # when no distance matrix or constraints are supplied, PCA is the default/auto ordination method
-  ord_calc() %>%
-  #ord_plot(color = "TYPE", shape = "SITE", plot_taxa = 1:5, size = 2) %>%
-  ord_plot_iris(tax_level = "phylum", ord_plot = "above", anno_colour = "TYPE")
 ```
 
 
@@ -926,14 +973,17 @@ ICE_rarefy %>%
 ```{r}
 
 
-ALLSTOIC_rRNA_siteMD_no_site6_df %>%
+#AC_ALLSTOIC_df %>%
+
+ALLSTOIC_rare_df %>%
+  mutate(phylum = reorder(phylum, Abundance)) %>%
   ggplot(aes(x= as.factor(DAYOFYEAR), y=Abundance, fill = phylum)) + 
   geom_bar(position = "fill", stat = 'identity') +
   geom_vline(xintercept = as.factor(221)) +
   scale_y_continuous(label=comma) +
   facet_grid(SITE~TYPE) +
-  scale_fill_manual(values = get_wants_hue(42)) +
-  labs(title = "Biological Replicates, Site separated", x = "Day", y = "Relative Abundance", fill = "Phyla") +
+  scale_fill_manual(values = taxa_colors) +
+  labs(title = "Rarefied", x = "Day", y = "Relative Abundance", fill = "Phyla") +
   scale_x_discrete(breaks=c(209, 213, 217, 219, 221, 222, 225, 230)) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust=1))
@@ -949,7 +999,7 @@ ALLSTOIC_rRNA_siteMD_no_site6_df %>%
 #remove package plyr from the Packages for this group_by to work
 detach("package:plyr", unload = TRUE)
 
-input <- ALLSTOIC_rRNA_seqMD_no_site6_df %>%
+input <- ALLSTOIC_no_site6_df %>%
   select(-OTU, - Sample, -NAME) %>%
   filter(!(FULLNAME %in% c("0807ICE1","0807ICE2","0807ICE3","0807ICE4","0807ICE5","0809ICE1",
                            "0809ICE2","0809ICE3",
@@ -993,7 +1043,7 @@ AVGSTIE_ALLSTOIC_phyla_bar
 detach(package:plyr)
 
 #Only algae and chytrids
-EUK_compare_df <- subset(ALLSTOIC_rRNA_siteMD_no_site6_df, subset = phylum %in% c(" Chytridiomycota", " Streptophyta", " Chlorophyta", "Rhizophydiales"))
+EUK_compare_df <- subset(ALLSTOIC_no_site6_df, subset = phylum %in% c(" Chytridiomycota", " Streptophyta", " Chlorophyta", "Rhizophydiales"))
 
 #Keep sites separate
 
@@ -1056,11 +1106,11 @@ siteavg_plot
 
 ```{r}
 #This is to just look at STOIC25 and KATIE25 to determine sequencing variance on the sample sample.
-ALLSTOIC_mRNA_siteMD25 = subset_samples(ALLSTOIC_mRNA_siteMD, FULLNAME == "0801ICE5")
-ALLSTOIC_rRNA_siteMD25 = subset_samples(ALLSTOIC_rRNA_siteMD, FULLNAME == "0801ICE5")
+#ALLSTOIC_mRNA_siteMD25 = subset_samples(ALLSTOIC_mRNA_siteMD, FULLNAME == "0801ICE5")
+ALLSTOIC25 = subset_samples(ALLSTOIC, FULLNAME == "0801ICE5")
  
 
-physeq25_df <- psmelt(ALLSTOIC_rRNA_siteMD25)
+physeq25_df <- psmelt(ALLSTOIC25)
 
 
 ###----Richness all----
@@ -1988,39 +2038,43 @@ plot_phyloseq_nmds <- function(phyloseq_obj, phyloseq_name, color_var) {
 
 # List of phyloseq objects
 phyloseq_objects <- list(
-  PHY_ice_rRNA_siteMD,
-  PHY_cc_rRNA_siteMD,
-  CC_rarefy,
-  ICE_rarefy
+  AC_PHY_ice,
+  AC_PHY_cc,
+  rarefied_physeq_CC,
+  rarefied_physeq_ICE,
+  Protist_ALLSTOIC_phy_CC,
+  Protist_ALLSTOIC_phy_ICE,
+  Prok_ALLSTOIC_phy_CC,
+  Prok_ALLSTOIC_phy_ICE,
+  Euk_ALLSTOIC_phy_CC,
+  Euk_ALLSTOIC_phy_ICE
 )
 
 # Names of the phyloseq objects
 phyloseq_names <- c(
-  "PHY_ice_rRNA_siteMD",
-  "PHY_cc_rRNA_siteMD",
-  "CC_rarefy",
-  "ICE_rarefy")
-#,
-  "Prok_ALLSTOIC_phy",
-  "Euk_ALLSTOIC_phy",
-  "Protist_ALLSTOIC_phy"
+  "AC_PHY_ice",
+  "AC_PHY_cc",
+  "rarefied_physeq_CC",
+  "rarefied_physeq_ICE",
+  "Protist_ALLSTOIC_phy_CC",
+  "Protist_ALLSTOIC_phy_ICE",
+  "Prok_ALLSTOIC_phy_CC",
+  "Prok_ALLSTOIC_phy_ICE",
+  "Euk_ALLSTOIC_phy_CC",
+  "Euk_ALLSTOIC_phy_ICE"
 )
 
 # List of color variables
-color_vars <- c("libraryprep", "DAYOFYEAR", "RUN", "STORAGE", "SITE")
+color_vars <- c("DAYOFYEAR")
 
-# Apply function to each phyloseq object and color variable, and save the plots to separate PDFs
+# Apply function to each phyloseq object and color variable, and print the plots to the viewer
 for (color_var in color_vars) {
   for (i in seq_along(phyloseq_objects)) {
     phyloseq_name <- phyloseq_names[i]
-    filename <- paste0("NMDS_", phyloseq_name, "_", color_var, ".pdf")
-    pdf(filename, width = 6, height = 5)
     p <- plot_phyloseq_nmds(phyloseq_objects[[i]], phyloseq_name, color_var)
     print(p)
-    dev.off()
   }
 }
-
 
 
 ```
@@ -2060,19 +2114,30 @@ test_phyloseq_betadispersion <- function(phyloseq_obj, phyloseq_name, group_var)
 
 # List of phyloseq objects
 phyloseq_objects <- list(
-  PHY_ice_rRNA_siteMD,
-  PHY_cc_rRNA_siteMD,
-  CC_rarefy,
-  ICE_rarefy
+  AC_PHY_ice,
+  AC_PHY_cc,
+  rarefied_physeq_CC,
+  rarefied_physeq_ICE,
+  Protist_ALLSTOIC_phy_CC,
+  Protist_ALLSTOIC_phy_ICE,
+  Prok_ALLSTOIC_phy_CC,
+  Prok_ALLSTOIC_phy_ICE,
+  Euk_ALLSTOIC_phy_CC,
+  Euk_ALLSTOIC_phy_ICE
 )
 
 # Names of the phyloseq objects
 phyloseq_names <- c(
-  "PHY_ice_rRNA_siteMD",
-  "PHY_cc_rRNA_siteMD",
-  "CC_rarefy",
-  "ICE_rarefy"
-)
+  "AC_PHY_ice",
+  "AC_PHY_cc",
+  "rarefied_physeq_CC",
+  "rarefied_physeq_ICE",
+  "Protist_ALLSTOIC_phy_CC",
+  "Protist_ALLSTOIC_phy_ICE",
+  "Prok_ALLSTOIC_phy_CC",
+  "Prok_ALLSTOIC_phy_ICE",
+  "Euk_ALLSTOIC_phy_CC",
+  "Euk_ALLSTOIC_phy_ICE")
 
 # List of group variables
 group_vars <- c("libraryprep", "DAYOFYEAR", "RUN", "STORAGE", "SITE")
@@ -2123,19 +2188,30 @@ perform_permanova <- function(phyloseq_obj, phyloseq_name, group_var) {
 
 # List of phyloseq objects
 phyloseq_objects <- list(
-  PHY_ice_rRNA_siteMD,
-  PHY_cc_rRNA_siteMD,
-  CC_rarefy,
-  ICE_rarefy
+  AC_PHY_ice,
+  AC_PHY_cc,
+  rarefied_physeq_CC,
+  rarefied_physeq_ICE,
+  Protist_ALLSTOIC_phy_CC,
+  Protist_ALLSTOIC_phy_ICE,
+  Prok_ALLSTOIC_phy_CC,
+  Prok_ALLSTOIC_phy_ICE,
+  Euk_ALLSTOIC_phy_CC,
+  Euk_ALLSTOIC_phy_ICE
 )
 
 # Names of the phyloseq objects
 phyloseq_names <- c(
-  "PHY_ice_rRNA_siteMD",
-  "PHY_cc_rRNA_siteMD",
-  "CC_rarefy",
-  "ICE_rarefy"
-)
+  "AC_PHY_ice",
+  "AC_PHY_cc",
+  "rarefied_physeq_CC",
+  "rarefied_physeq_ICE",
+  "Protist_ALLSTOIC_phy_CC",
+  "Protist_ALLSTOIC_phy_ICE",
+  "Prok_ALLSTOIC_phy_CC",
+  "Prok_ALLSTOIC_phy_ICE",
+  "Euk_ALLSTOIC_phy_CC",
+  "Euk_ALLSTOIC_phy_ICE")
 
 # List of group variables
 group_vars <- c("libraryprep", "DAYOFYEAR", "RUN", "STORAGE", "SITE")
@@ -2205,18 +2281,18 @@ test_phyloseq_betadispersion <- function(phyloseq_obj, phyloseq_name, group_var)
 
 # List of phyloseq objects
 phyloseq_objects <- list(
-  AC_PHY_ice_rRNA_siteMD,
-  AC_PHY_cc_rRNA_siteMD,
-  CC_rarefy,
-  ICE_rarefy
+  AC_PHY_ice,
+  AC_PHY_cc,
+  rarefied_physeq_CC,
+  rarefied_physeq_ICE
 )
 
 # Names of the phyloseq objects
 phyloseq_names <- c(
-  "AC_PHY_ice_rRNA_siteMD",
-  "AC_PHY_cc_rRNA_siteMD",
-  "CC_rarefy",
-  "ICE_rarefy"
+  "AC_PHY_ice",
+  "AC_PHY_cc",
+  "rarefied_physeq_CC",
+  "rarefied_physeq_ICE"
 )
 
 # List of group variables
@@ -2234,140 +2310,22 @@ for (group_var in group_vars) {
 ```
 
 
-
-
-
-
-
 ##PERMANOVA ; 
 #multivariate extension of ANOVA. Based on the distances between samples. The test compares distances of samples withing the same group to distances of samples from a different group(s). Is the distance between #samples from the different groups is much larger than samples from the same group, we conclude that the groups are not equal.
 #To test the significance of the results, a permutation test is used. All the samples are randomly mixed over the groups and the test is repeated many times. If the ratio (between group distance/within group #distance) is much larger for the original data than for the permutations, we conclude there is a significant difference. 
 ```{r}
 
 
-ICE_rarefy_df <- psmelt(ICE_rarefy)
-CC_rare_df <- psmelt(CC_rarefy)
+rarefied_physeq_ICE_df <- psmelt(rarefied_physeq_ICE)
+CC_rare_df <- psmelt(rarefied_physeq_CC)
 
 
-write.csv((ICE_rarefy_df), "ice_rarefy_df.csv", row.names = FALSE)
-write.csv((CC_rare_df), "cc_rarefy_df.csv", row.names = FALSE)
+write.csv((rarefied_physeq_ICE_df), "rarefied_physeq_ICE_df.csv", row.names = FALSE)
+write.csv((CC_rare_df), "rarefied_physeq_CC_df.csv", row.names = FALSE)
 
 
 ```
 
-
-```{r}
-# Load necessary libraries
-library(phyloseq)
-library(vegan)
-set.seed(1000)
-
-# 1. Run PERMANOVA for a single variable
-perform_permanova <- function(phyloseq_obj, variable) {
-  # Extract sample data as a data frame
-  sample_data_df <- as(sample_data(phyloseq_obj), "data.frame")
-  
-  # Ensure the grouping variable is a factor
-  if (!is.factor(sample_data_df[[variable]])) {
-    sample_data_df[[variable]] <- as.factor(sample_data_df[[variable]])
-  }
-  
-  # Calculate Bray-Curtis dissimilarities
-  distance_matrix <- phyloseq::distance(phyloseq_obj, method = "bray")
-  
-  # Perform PERMANOVA
-  formula <- as.formula(paste("distance_matrix ~", variable))
-  permanova_result <- adonis2(formula, data = sample_data_df, permutations = 999)
-  
-  return(permanova_result)
-}
-
-# 2. Run beta dispersion and ANOVA for a single variable
-perform_betadispersion <- function(phyloseq_obj, variable) {
-  # Extract sample data as a data frame
-  sample_data_df <- as.data.frame(sample_data(phyloseq_obj))
-  
-  # Ensure the grouping variable is a factor
-  if (!is.factor(sample_data_df[[variable]])) {
-    sample_data_df[[variable]] <- as.factor(sample_data_df[[variable]])
-  }
-  
-  # Calculate Bray-Curtis dissimilarities
-  distance_matrix <- phyloseq::distance(phyloseq_obj, method = "bray")
-  
-  # Perform beta dispersion analysis
-  betadisp_result <- betadisper(distance_matrix, sample_data_df[[variable]])
-  
-  # Perform ANOVA on beta dispersion results
-  anova_result <- anova(betadisp_result)
-  
-  return(anova_result)
-}
-
-# 3. Define the list of phyloseq objects and types
-phyloseq_objects <- list(ICE_rarefy = ICE_rarefy,
-                         CC_rarefy = CC_rarefy)
-#
- # Prok_ALLSTOIC_phy = Prok_ALLSTOIC_phy,
- # Euk_ALLSTOIC_phy = Euk_ALLSTOIC_phy,
-#  Protist_ALLSTOIC_phy = Protist_ALLSTOIC_phy
-#)
-types <- c("ice", "cryoconite")
-
-# 4. Initialize an empty list to store results
-results_list <- list()
-
-# 5. Loop over each phyloseq object and type
-for (phyloseq_name in names(phyloseq_objects)) {
-  for (subset_type in types) {
-    
-    # Subset the phyloseq object based on TYPE (ice or cryoconite)
-    phyloseq_obj <- subset_samples(phyloseq_objects[[phyloseq_name]], TYPE == subset_type)
-    
-    # Run PERMANOVA for SITE
-    permanova_result_site <- perform_permanova(phyloseq_obj, "SITE")
-    
-    # Run beta dispersion and ANOVA for SITE
-    betadispersion_results_site <- perform_betadispersion(phyloseq_obj, "SITE")
-    
-    # Run PERMANOVA for DAYOFYEAR
-    permanova_result_dayofyear <- perform_permanova(phyloseq_obj, "DAYOFYEAR")
-    
-    # Run beta dispersion and ANOVA for DAYOFYEAR
-    betadispersion_results_dayofyear <- perform_betadispersion(phyloseq_obj, "DAYOFYEAR")
-    
-    # Store the results in the list
-    results_list[[paste(phyloseq_name, subset_type, sep = "_")]] <- list(
-      PERMANOVA_SITE = permanova_result_site,
-      Betadispersion_SITE = betadispersion_results_site,
-      PERMANOVA_DAYOFYEAR = permanova_result_dayofyear,
-      Betadispersion_DAYOFYEAR = betadispersion_results_dayofyear
-    )
-  }
-}
-
-# 6. Display the results in an easily readable format
-for (result_name in names(results_list)) {
-  cat("\n\n### Results for:", result_name, "###\n")
-  
-  # Print PERMANOVA results for SITE
-  cat("\nPERMANOVA results for SITE:\n")
-  print(results_list[[result_name]]$PERMANOVA_SITE)
-  
-  # Print Beta Dispersion and ANOVA results for SITE
-  cat("\nBeta Dispersion ANOVA results for SITE:\n")
-  print(results_list[[result_name]]$Betadispersion_SITE)
-  
-  # Print PERMANOVA results for DAYOFYEAR
-  cat("\nPERMANOVA results for DAYOFYEAR:\n")
-  print(results_list[[result_name]]$PERMANOVA_DAYOFYEAR)
-  
-  # Print Beta Dispersion and ANOVA results for DAYOFYEAR
-  cat("\nBeta Dispersion ANOVA results for DAYOFYEAR:\n")
-  print(results_list[[result_name]]$Betadispersion_DAYOFYEAR)
-}
-
-```
 ##NMDS of the Prokaryotic, Eukaryotic and Protist communities
 ```{r}
 # Function to perform NMDS and plot for ice or cryoconite
@@ -2377,9 +2335,9 @@ for (result_name in names(results_list)) {
 #Protist_ALLSTOIC_phy
 
 # Define your phyloseq object and subset type
-phyloseq_obj <- Protist_ALLSTOIC_phy  # Change this to any of your phyloseq objects
-subset_type <- 'cryoconite'              # Choose between 'ice' or 'cryoconite'
-phyloseq_name <- "Protist_ALLSTOIC_phy"  # Name of the phyloseq object for plot title and console output
+phyloseq_obj <- Euk_ALLSTOIC_phy  # Change this to any of your phyloseq objects
+subset_type <- 'ice'              # Choose between 'ice' or 'cryoconite'
+phyloseq_name <- "Euk_ALLSTOIC_phy"  # Name of the phyloseq object for plot title and console output
 
 # Subset the phyloseq object based on TYPE (ice or cryoconite)
 phyloseq_subset <- subset_samples(phyloseq_obj, TYPE == subset_type)
@@ -2414,12 +2372,51 @@ cat("Stress value for", phyloseq_name, "-", subset_type, "colored by DAYOFYEAR:"
 # Display the plot
 print(p)
 
+#Shannon diversity plots 
+plot_shannon_diversity <- function(phyloseq_obj, phyloseq_name) {
+  # Ensure that SITE is treated as a factor
+  sample_data(phyloseq_obj)$SITE <- as.factor(sample_data(phyloseq_obj)$SITE)
+
+  # Calculate richness (Shannon Index) and create the base plot
+  richness_df <- plot_richness(phyloseq_obj, x = "SITE", measures = c("Shannon"))
+
+  richness_df$data$SITE <- as.factor(richness_df$data$SITE)
+  richness_df$data$DAYOFYEAR <- as.factor(richness_df$data$DAYOFYEAR)
+
+  # Customize the plot with boxplots and jittered points
+  richness_plot <- ggplot(richness_df$data, aes(x = SITE, y = value)) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_jitter(aes(color = DAYOFYEAR), width = 0.2, alpha = 0.8, size = 2) +  # Jittered points colored by DAYOFYEAR
+    facet_grid(variable ~ TYPE, scales = "free") +  # Facet by diversity measure and TYPE
+    theme_bw() +
+    labs(title = paste(phyloseq_name, subset_type, "Shannon Diversity by Site"), x = "Site", y = "Shannon Diversity Index") +
+    theme(legend.position = "right",  # Position the legend to the right
+          strip.background = element_rect(fill = "white"),
+          axis.text.x = element_text(angle = 0, vjust = 0, hjust = 0.5))
+
+  # Return the plot
+  return(richness_plot)
+}
+
+# Subset the phyloseq object based on TYPE (ice or cryoconite)
+phyloseq_subset <- subset_samples(phyloseq_obj, TYPE == subset_type)
+
+# Generate NMDS plot
+nmds_plot <- plot_phyloseq_nmds(phyloseq_subset, phyloseq_name, "DAYOFYEAR")
+
+# Generate Shannon diversity plot
+shannon_plot <- plot_shannon_diversity(phyloseq_subset, phyloseq_name)
+
+# Display the plots
+print(nmds_plot)
+print(shannon_plot)
+
 
 ```
 
 
 
-### Below is the unknown
+### Below is scratch work space
 
 
 
@@ -2711,7 +2708,7 @@ kruskal.test(leveneTest(InfieldRatio ~ DAYOFYEAR.x, data=data))
 
 ```{r}
 
-IceAlgaerRNAsummarize <-  subset(ALLSTOIC_rRNA_siteMD_no_site6_df, phylum == " Streptophyta" )
+IceAlgaerRNAsummarize <-  subset(ALLSTOIC_no_site6_df, phylum == " Streptophyta" )
 
 IceAlgaerRNAsummarize_2 <- IceAlgaerRNAsummarize %>%
   group_by(Sample) %>%
